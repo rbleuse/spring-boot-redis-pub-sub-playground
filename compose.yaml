@@ -1,0 +1,13 @@
+services:
+  valkey:
+    image: 'valkey/valkey:9.1.0'
+    ports:
+      - '6379'
+    labels:
+      org.springframework.boot.service-connection: redis
+  pulsar:
+    image: 'apachepulsar/pulsar:4.2.2'
+    command: [ 'bin/pulsar', 'standalone' ]
+    ports:
+      - '6650'
+      - '8080'

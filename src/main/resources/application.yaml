@@ -1,3 +1,13 @@
 spring:
   application:
     name: spring-boot-redis-pub-sub-playground
+  pulsar:
+    producer:
+      topic-name: jobs.submitted
+    consumer:
+      subscription:
+        type: shared
+
+logging:
+  level:
+    io.github.rbleuse.playground: INFO
