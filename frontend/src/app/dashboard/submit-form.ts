@@ -4,13 +4,20 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { JobApiService } from '../core/job-api.service';
 
 @Component({
   selector: 'app-submit-form',
   standalone: true,
-  imports: [ReactiveFormsModule, MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule],
+  imports: [
+    ReactiveFormsModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatSnackBarModule,
+  ],
   templateUrl: './submit-form.html',
 })
 export class SubmitForm {
@@ -33,7 +40,8 @@ export class SubmitForm {
         this.snack.open(`Submitted ${r.jobId}`, 'OK', { duration: 3000 });
         this.form.reset({ name: '', durationMs: 10000, failureRate: 0 });
       },
-      error: (e) => this.snack.open(e?.error?.detail ?? 'Submit failed', 'Dismiss', { duration: 5000 }),
+      error: (e) =>
+        this.snack.open(e?.error?.detail ?? 'Submit failed', 'Dismiss', { duration: 5000 }),
     });
   }
 }

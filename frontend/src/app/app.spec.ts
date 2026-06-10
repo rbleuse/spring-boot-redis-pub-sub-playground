@@ -7,6 +7,7 @@ import { JobStreamService } from './core/job-stream.service';
 
 class StubStreamService {
   readonly status = signal('closed');
+
   connect(): void {}
 }
 
@@ -24,6 +25,7 @@ describe('App', () => {
 
   it('should create the app', () => {
     const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
     const app = fixture.componentInstance;
     expect(app).toBeTruthy();
   });

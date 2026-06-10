@@ -1,7 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { SubmitForm } from './submit-form';
 import { JobsTable } from './jobs-table';
 import { JobDetailDialog } from './job-detail-dialog';
@@ -13,7 +13,7 @@ import { Job } from '../core/job.models';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [MatToolbarModule, MatIconModule, SubmitForm, JobsTable],
+  imports: [MatToolbarModule, MatIconModule, MatDialogModule, SubmitForm, JobsTable],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
 })
@@ -25,8 +25,8 @@ export class Dashboard implements OnInit {
   readonly status = this.stream.status;
 
   ngOnInit(): void {
-    this.api.list().subscribe(jobs => this.store.seed(jobs));  // REST seed first
-    this.stream.connect();                                      // then go live
+    this.api.list().subscribe((jobs) => this.store.seed(jobs)); // REST seed first
+    this.stream.connect(); // then go live
   }
 
   openJob(job: Job): void {

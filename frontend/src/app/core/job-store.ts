@@ -1,5 +1,5 @@
 import { Injectable, signal, computed, Signal } from '@angular/core';
-import { Job, JobProgressEvent, mergeEvent } from './job.models';
+import { Job, JobProgressEvent, mergeEvent, mergeSnapshot } from './job.models';
 
 @Injectable({ providedIn: 'root' })
 export class JobStore {
@@ -15,9 +15,13 @@ export class JobStore {
     return computed(() => this.byId().get(jobId));
   }
 
-  /** Replace state with a REST-loaded list. */
+  /** Merge REST-loaded snapshots without overwriting newer live events. */
   seed(jobs: Job[]): void {
-    this.byId.set(new Map(jobs.map(j => [j.jobId, j])));
+    const next = new Map(this.byId());
+    for (const job of jobs) {
+      next.set(job.jobId, mergeSnapshot(next.get(job.jobId), job));
+    }
+    this.byId.set(next);
   }
 
   /** Merge a single live event. */

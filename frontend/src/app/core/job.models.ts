@@ -48,3 +48,8 @@ export function mergeEvent(prior: Job | undefined, event: JobProgressEvent): Job
     updatedAt: event.timestamp,
   };
 }
+
+/** Keep whichever representation has the latest update. Prefer snapshots on equal timestamps. */
+export function mergeSnapshot(prior: Job | undefined, snapshot: Job): Job {
+  return prior && Date.parse(prior.updatedAt) > Date.parse(snapshot.updatedAt) ? prior : snapshot;
+}
