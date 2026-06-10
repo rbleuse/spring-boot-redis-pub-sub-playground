@@ -190,7 +190,7 @@ dev-time integration):
 | Thing | Version |
 |---|---|
 | Spring Boot | 4.1.0-RC1 (as scaffolded) |
-| Kotlin / JVM | 2.3.20 / Java 25 |
+| Kotlin / JVM | 2.4.0 / Java 25 (bump from scaffolded 2.3.20) |
 | Valkey | 9.1.0 (`valkey/valkey:9.1.0`) |
 | Apache Pulsar | 4.2.2 (`apachepulsar/pulsar:4.2.2`) |
 | Kotest assertions | 6.1.11 |
