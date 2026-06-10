@@ -56,7 +56,7 @@ frontend/src/app/
     submit-form.ts        # Material reactive form; validators mirror Bean Validation
     jobs-table.ts         # MatTable of all jobs, live; row click opens detail dialog
     job-detail-dialog.ts  # MatDialog: live progress bar + event log for one job
-  app.config.ts           # providers: HttpClient, zoneless CD, Material, animations
+  app.config.ts           # providers: HttpClient, zoneless CD (Angular 22 Material uses native Web Animations — no animations provider)
   app.ts                  # root shell hosting <dashboard>
   environments/
     environment.ts        # apiBaseUrl, wsUrl (dev: http://localhost:8080, ws://localhost:8080/ws)
