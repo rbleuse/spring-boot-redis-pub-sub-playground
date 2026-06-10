@@ -1,0 +1,25 @@
+services:
+  valkey:
+    image: 'valkey/valkey:9.1.0'
+  pulsar:
+    image: 'apachepulsar/pulsar:4.2.2'
+    command: [ 'bin/pulsar', 'standalone' ]
+  app1:
+    image: 'spring-boot-redis-pub-sub-playground:0.0.1-SNAPSHOT'
+    environment:
+      SPRING_DATA_REDIS_HOST: valkey
+      SPRING_PULSAR_CLIENT_SERVICE_URL: pulsar://pulsar:6650
+    depends_on: [ valkey, pulsar ]
+  app2:
+    image: 'spring-boot-redis-pub-sub-playground:0.0.1-SNAPSHOT'
+    environment:
+      SPRING_DATA_REDIS_HOST: valkey
+      SPRING_PULSAR_CLIENT_SERVICE_URL: pulsar://pulsar:6650
+    depends_on: [ valkey, pulsar ]
+  nginx:
+    image: 'nginx:1.27'
+    volumes:
+      - './nginx/nginx.conf:/etc/nginx/nginx.conf:ro'
+    ports:
+      - '8080:8080'
+    depends_on: [ app1, app2 ]
