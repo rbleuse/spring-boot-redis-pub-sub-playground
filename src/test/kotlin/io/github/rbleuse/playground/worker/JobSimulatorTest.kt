@@ -4,7 +4,6 @@ import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 
 class JobSimulatorTest {
-
     private val simulator = JobSimulator(steps = 10)
 
     @Test

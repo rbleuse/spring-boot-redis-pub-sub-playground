@@ -13,8 +13,10 @@ class ProgressSubscriber(
     private val messaging: SimpMessagingTemplate,
     private val objectMapper: ObjectMapper,
 ) : MessageListener {
-
-    override fun onMessage(message: Message, pattern: ByteArray?) {
+    override fun onMessage(
+        message: Message,
+        pattern: ByteArray?,
+    ) {
         val event = objectMapper.readValue(message.body, JobProgressEvent::class.java)
         logger.debug("Forwarding progress for job {} ({})", event.jobId, event.status)
         messaging.convertAndSend(Destinations.job(event.jobId), event)

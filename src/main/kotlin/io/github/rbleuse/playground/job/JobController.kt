@@ -12,18 +12,24 @@ import java.net.URI
 
 @RestController
 @RequestMapping("/jobs")
-class JobController(private val service: JobService) {
-
+class JobController(
+    private val service: JobService,
+) {
     @PostMapping
-    fun submit(@Valid @RequestBody request: SubmitJobRequest): ResponseEntity<SubmitJobResponse> {
+    fun submit(
+        @Valid @RequestBody request: SubmitJobRequest,
+    ): ResponseEntity<SubmitJobResponse> {
         val jobId = service.submit(request)
-        return ResponseEntity.accepted()
+        return ResponseEntity
+            .accepted()
             .location(URI.create("/jobs/$jobId"))
             .body(SubmitJobResponse(jobId))
     }
 
     @GetMapping("/{jobId}")
-    fun get(@PathVariable jobId: String): Job = service.get(jobId)
+    fun get(
+        @PathVariable jobId: String,
+    ): Job = service.get(jobId)
 
     @GetMapping
     fun list(): List<Job> = service.list()

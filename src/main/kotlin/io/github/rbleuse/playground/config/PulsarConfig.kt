@@ -8,7 +8,6 @@ import org.springframework.pulsar.core.SchemaResolver.SchemaResolverCustomizer
 
 @Configuration
 class PulsarConfig {
-
     /**
      * Pulsar's default JSON schema uses a shaded ObjectMapper without the Kotlin module,
      * which cannot deserialize Kotlin data classes. Point it at Spring's mapper instead.

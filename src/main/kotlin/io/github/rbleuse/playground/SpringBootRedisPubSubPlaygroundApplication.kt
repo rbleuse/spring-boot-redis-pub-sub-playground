@@ -7,5 +7,5 @@ import org.springframework.boot.runApplication
 class SpringBootRedisPubSubPlaygroundApplication
 
 fun main(args: Array<String>) {
-	runApplication<SpringBootRedisPubSubPlaygroundApplication>(*args)
+    runApplication<SpringBootRedisPubSubPlaygroundApplication>(*args)
 }

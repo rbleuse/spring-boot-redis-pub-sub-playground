@@ -10,10 +10,12 @@ object Channels {
 
 object Destinations {
     const val JOBS_FIREHOSE = "/topic/jobs"
+
     fun job(jobId: String) = "/topic/jobs/$jobId"
 }
 
 object RedisKeys {
     fun job(jobId: String) = "job:$jobId"
+
     const val JOB_INDEX = "jobs:index"
 }

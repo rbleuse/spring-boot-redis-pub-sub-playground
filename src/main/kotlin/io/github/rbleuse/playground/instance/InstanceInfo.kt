@@ -5,7 +5,9 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import kotlin.random.Random
 
-data class InstanceInfo(val id: String)
+data class InstanceInfo(
+    val id: String,
+)
 
 @Configuration
 class InstanceConfig {

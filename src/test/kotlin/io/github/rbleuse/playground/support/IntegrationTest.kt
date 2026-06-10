@@ -8,7 +8,6 @@ import org.testcontainers.utility.DockerImageName
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 abstract class IntegrationTest {
-
     companion object {
         // Singleton containers: started once for the whole test-run JVM and never stopped by
         // JUnit's @Testcontainers per-class lifecycle. Multiple @SpringBootTest classes share one

@@ -23,7 +23,7 @@ class JobService(
                 progress = 0,
                 submittedAt = now,
                 updatedAt = now,
-            )
+            ),
         )
         pulsarTemplate.send(
             Topics.JOBS_SUBMITTED,

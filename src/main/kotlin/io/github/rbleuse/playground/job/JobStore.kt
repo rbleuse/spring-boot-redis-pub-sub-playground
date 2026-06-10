@@ -7,8 +7,9 @@ import java.time.Duration
 import java.time.Instant
 
 @Repository
-class JobStore(private val redis: StringRedisTemplate) {
-
+class JobStore(
+    private val redis: StringRedisTemplate,
+) {
     fun save(job: Job) {
         val key = RedisKeys.job(job.jobId)
         redis.opsForHash<String, String>().putAll(key, job.toHash())
@@ -24,30 +25,35 @@ class JobStore(private val redis: StringRedisTemplate) {
     }
 
     fun findAll(): List<Job> =
-        redis.opsForSet().members(RedisKeys.JOB_INDEX).orEmpty()
+        redis
+            .opsForSet()
+            .members(RedisKeys.JOB_INDEX)
+            .orEmpty()
             .mapNotNull { find(it) }
 
-    private fun Job.toHash(): Map<String, String> = buildMap {
-        put("jobId", jobId)
-        put("name", name)
-        put("status", status.name)
-        put("progress", progress.toString())
-        put("submittedAt", submittedAt.toString())
-        put("updatedAt", updatedAt.toString())
-        workerId?.let { put("workerId", it) }
-        error?.let { put("error", it) }
-    }
+    private fun Job.toHash(): Map<String, String> =
+        buildMap {
+            put("jobId", jobId)
+            put("name", name)
+            put("status", status.name)
+            put("progress", progress.toString())
+            put("submittedAt", submittedAt.toString())
+            put("updatedAt", updatedAt.toString())
+            workerId?.let { put("workerId", it) }
+            error?.let { put("error", it) }
+        }
 
-    private fun Map<String, String>.toJob(): Job = Job(
-        jobId = getValue("jobId"),
-        name = getValue("name"),
-        status = JobStatus.valueOf(getValue("status")),
-        progress = getValue("progress").toInt(),
-        submittedAt = Instant.parse(getValue("submittedAt")),
-        updatedAt = Instant.parse(getValue("updatedAt")),
-        workerId = this["workerId"],
-        error = this["error"],
-    )
+    private fun Map<String, String>.toJob(): Job =
+        Job(
+            jobId = getValue("jobId"),
+            name = getValue("name"),
+            status = JobStatus.valueOf(getValue("status")),
+            progress = getValue("progress").toInt(),
+            submittedAt = Instant.parse(getValue("submittedAt")),
+            updatedAt = Instant.parse(getValue("updatedAt")),
+            workerId = this["workerId"],
+            error = this["error"],
+        )
 
     companion object {
         private val TERMINAL_TTL: Duration = Duration.ofHours(1)

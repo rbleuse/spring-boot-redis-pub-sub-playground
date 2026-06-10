@@ -7,8 +7,9 @@ import org.springframework.pulsar.annotation.PulsarListener
 import org.springframework.stereotype.Component
 
 @Component
-class JobWorker(private val processor: JobProcessor) {
-
+class JobWorker(
+    private val processor: JobProcessor,
+) {
     @PulsarListener(
         subscriptionName = "job-workers",
         topics = ["jobs.submitted"],
