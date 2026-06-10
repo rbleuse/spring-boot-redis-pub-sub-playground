@@ -98,7 +98,7 @@ npx ng add @angular/material --skip-confirmation
 ```
 Choose a prebuilt theme (e.g. Azure/Blue) and accept Angular animations when prompted (non-interactive defaults are fine with `--skip-confirmation`).
 
-Expected: `@angular/material` + `@angular/cdk` in `dependencies`; a theme imported in `styles.scss`; `provideAnimationsAsync()` (or browser animations provider) added to `app.config.ts`.
+Expected: `@angular/material` + `@angular/cdk` in `dependencies`; a theme (`mat.theme()`) imported in `styles.scss`. Note: Angular 22 Material uses the Web Animations API and does **not** install `@angular/animations` or add any animations provider — `app.config.ts` is left untouched by `ng add` (only `provideBrowserGlobalErrorListeners()` is present from scaffolding).
 
 - [ ] **Step 2: Verify build still succeeds**
 
@@ -456,7 +456,7 @@ export class JobApiService {
 
 - [ ] **Step 5: Add `provideHttpClient` to app config**
 
-In `frontend/src/app/app.config.ts`, add `provideHttpClient()` to the `providers` array (import from `@angular/common/http`). Keep the existing Material/animation and zoneless providers.
+In `frontend/src/app/app.config.ts`, add `provideHttpClient()` to the `providers` array (import from `@angular/common/http`). Keep the existing `provideBrowserGlobalErrorListeners()`. (Zoneless is added in Task 10; no animations provider exists in Angular 22 Material.)
 
 - [ ] **Step 6: Run test to verify it passes**
 
@@ -651,13 +651,12 @@ git commit -m "feat(frontend): STOMP JobStreamService with connection status"
 import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { SubmitForm } from './submit-form';
 
 describe('SubmitForm', () => {
   function make() {
     TestBed.configureTestingModule({
-      providers: [provideHttpClient(), provideHttpClientTesting(), provideAnimationsAsync()],
+      providers: [provideHttpClient(), provideHttpClientTesting()],
     });
     const fixture = TestBed.createComponent(SubmitForm);
     fixture.detectChanges();
@@ -781,7 +780,6 @@ git commit -m "feat(frontend): submit form with client-side validation"
 `frontend/src/app/dashboard/jobs-table.spec.ts`:
 ```ts
 import { TestBed } from '@angular/core/testing';
-import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { JobsTable } from './jobs-table';
 import { JobStore } from '../core/job-store';
 import { Job } from '../core/job.models';
@@ -795,7 +793,7 @@ describe('JobsTable', () => {
     };
     store.seed([job]);
     TestBed.configureTestingModule({
-      providers: [provideAnimationsAsync(), { provide: JobStore, useValue: store }],
+      providers: [{ provide: JobStore, useValue: store }],
     });
     const fixture = TestBed.createComponent(JobsTable);
     fixture.detectChanges();
@@ -1051,13 +1049,13 @@ imports: [Dashboard],
 
 - [ ] **Step 3: Confirm providers in app.config.ts**
 
-`frontend/src/app/app.config.ts` `providers` must include (merge with what `ng add @angular/material` created — do not duplicate):
+`frontend/src/app/app.config.ts` `providers` must include (keep the scaffolded `provideBrowserGlobalErrorListeners()`; `provideHttpClient()` was added in Task 5 — do not duplicate):
 ```ts
+provideBrowserGlobalErrorListeners(),
 provideZonelessChangeDetection(),
 provideHttpClient(),
-provideAnimationsAsync(),
 ```
-(`provideZonelessChangeDetection` from `@angular/core`, `provideHttpClient` from `@angular/common/http`, `provideAnimationsAsync` from `@angular/platform-browser/animations/async`.)
+(`provideZonelessChangeDetection` from `@angular/core`, `provideHttpClient` from `@angular/common/http`. Angular 22 Material needs no animations provider.)
 
 - [ ] **Step 4: Run the full test suite and build**
 
