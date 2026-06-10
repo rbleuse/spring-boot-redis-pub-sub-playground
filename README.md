@@ -34,6 +34,32 @@ docker compose -f compose-cluster.yaml up
 Two app replicas sit behind nginx on `:8080`. Submit a job and watch the logs:
 one replica processes it, but events still reach a WebSocket held by the other.
 
+## Frontend
+
+An Angular 22 dashboard lives in `frontend/`: submit jobs and watch a live table
+fill from the `/topic/jobs` firehose.
+
+### Dev
+```bash
+cd frontend && npm start
+```
+Serves the dashboard on http://localhost:4200 against the backend on `:8080`
+(CORS already allows `:4200`). STOMP connects to `ws://localhost:8080/ws`.
+
+### Cluster
+```bash
+cd frontend && npm run build
+```
+This produces `frontend/dist/frontend/browser`, which nginx serves as static
+files (REST `/jobs` and the `/ws` WebSocket still proxy to the app replicas).
+Build the app image first (see above), then bring the stack up:
+```bash
+./gradlew bootBuildImage --imageName=spring-boot-redis-pub-sub-playground:0.0.1-SNAPSHOT
+docker compose -f compose-cluster.yaml up --build
+```
+Open http://localhost:8080, submit a job, and watch the live table fill from the
+`/topic/jobs` firehose while one app instance's logs show it processing the work.
+
 ## Architecture
 ```
 POST /jobs ──► instance X ──► Pulsar (jobs.submitted, Shared sub)
