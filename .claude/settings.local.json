@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx ctx7@latest docs *)",
+      "PowerShell(npx ctx7@latest docs *)"
+    ]
+  }
+}

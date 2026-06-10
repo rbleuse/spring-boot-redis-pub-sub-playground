@@ -25,9 +25,6 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-redis")
 	implementation("org.springframework.boot:spring-boot-starter-pulsar")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
-	// Spring Pulsar's JSON schema needs a Jackson 2 ObjectMapper, but Spring Boot 4
-	// auto-configures only Jackson 3. This module auto-configures the Jackson 2 mapper
-	// (registering the Kotlin + JSR-310 modules below). Note: deprecated, removed in 4.3.
 	implementation("org.springframework.boot:spring-boot-jackson2")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
