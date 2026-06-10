@@ -1,0 +1,18 @@
+@if (notFound()) {
+  <p>Job expired (TTL) — its state is no longer available.</p>
+} @else if (job(); as j) {
+  <h2 mat-dialog-title>{{ j.name }}</h2>
+  <mat-dialog-content>
+    <p>Status: {{ j.status }} · Worker: {{ j.workerId ?? '—' }}</p>
+    <mat-progress-bar mode="determinate" [value]="j.progress"></mat-progress-bar>
+    <span>{{ j.progress }}%</span>
+    @if (j.error) { <p class="error">Error: {{ j.error }}</p> }
+    <mat-list>
+      @for (e of log(); track e.timestamp) {
+        <mat-list-item>{{ e.timestamp }} — {{ e.status }} {{ e.progress }}% ({{ e.workerId ?? '—' }})</mat-list-item>
+      }
+    </mat-list>
+  </mat-dialog-content>
+} @else {
+  <p>Loading…</p>
+}
