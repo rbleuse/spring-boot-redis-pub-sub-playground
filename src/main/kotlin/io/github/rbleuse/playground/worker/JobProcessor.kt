@@ -8,8 +8,14 @@ import io.github.rbleuse.playground.job.JobStore
 import io.github.rbleuse.playground.progress.ProgressReporter
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import java.time.Duration
 import java.time.Instant
+import java.util.UUID
 import kotlin.random.Random
+
+class JobAlreadyProcessingException(
+    jobId: String,
+) : RuntimeException("Job is already being processed: $jobId")
 
 @Service
 class JobProcessor(
@@ -21,41 +27,60 @@ class JobProcessor(
 ) {
     fun process(command: JobCommand) {
         logger.info("Instance {} processing job {} ({})", instance.id, command.jobId, command.name)
-        val base = store.find(command.jobId) ?: baseJob(command)
+        val existing = store.find(command.jobId)
+        if (existing?.status?.isTerminal == true) {
+            logger.info("Skipping terminal job {} ({})", command.jobId, existing.status)
+            return
+        }
+        val lease = Duration.ofMillis(command.durationMs.coerceAtLeast(0)).plus(PROCESSING_LOCK_GRACE)
+        val lockOwner = "${instance.id}:${UUID.randomUUID()}"
+        if (!store.tryAcquireProcessing(command.jobId, lockOwner, lease)) {
+            throw JobAlreadyProcessingException(command.jobId)
+        }
 
-        for (step in 1..simulator.totalSteps) {
-            Thread.sleep(simulator.stepDelayMs(command.durationMs))
-            if (simulator.shouldFail(command.failureRate, random.nextDouble())) {
-                reporter.report(
-                    base.copy(
-                        status = JobStatus.FAILED,
-                        workerId = instance.id,
-                        error = "Job failed at step $step of ${simulator.totalSteps}",
-                        updatedAt = Instant.now(),
-                    ),
-                )
-                logger.info("Job {} FAILED at step {}", command.jobId, step)
+        try {
+            var current = store.find(command.jobId) ?: baseJob(command)
+            if (current.status.isTerminal) {
+                logger.info("Skipping terminal job {} ({})", command.jobId, current.status)
                 return
             }
+
+            for (step in 1..simulator.totalSteps) {
+                Thread.sleep(simulator.stepDelayMs(command.durationMs))
+                if (simulator.shouldFail(command.failureRate, random.nextDouble())) {
+                    reporter.report(
+                        current.copy(
+                            status = JobStatus.FAILED,
+                            workerId = instance.id,
+                            error = "Job failed at step $step of ${simulator.totalSteps}",
+                            updatedAt = Instant.now(),
+                        ),
+                    )
+                    logger.info("Job {} FAILED at step {}", command.jobId, step)
+                    return
+                }
+                current =
+                    current.copy(
+                        status = JobStatus.RUNNING,
+                        progress = simulator.progressAt(step),
+                        workerId = instance.id,
+                        updatedAt = Instant.now(),
+                    )
+                reporter.report(current)
+            }
+
             reporter.report(
-                base.copy(
-                    status = JobStatus.RUNNING,
-                    progress = simulator.progressAt(step),
+                current.copy(
+                    status = JobStatus.COMPLETED,
+                    progress = 100,
                     workerId = instance.id,
                     updatedAt = Instant.now(),
                 ),
             )
+            logger.info("Job {} COMPLETED", command.jobId)
+        } finally {
+            store.releaseProcessing(command.jobId, lockOwner)
         }
-
-        reporter.report(
-            base.copy(
-                status = JobStatus.COMPLETED,
-                progress = 100,
-                workerId = instance.id,
-                updatedAt = Instant.now(),
-            ),
-        )
-        logger.info("Job {} COMPLETED", command.jobId)
     }
 
     private fun baseJob(command: JobCommand) =
@@ -69,6 +94,7 @@ class JobProcessor(
         )
 
     companion object {
+        private val PROCESSING_LOCK_GRACE: Duration = Duration.ofSeconds(30)
         private val logger = LoggerFactory.getLogger(JobProcessor::class.java)
     }
 }

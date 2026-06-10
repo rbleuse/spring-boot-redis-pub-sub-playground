@@ -9,9 +9,20 @@ class JobNotFoundException(
     jobId: String,
 ) : RuntimeException("Job not found: $jobId")
 
+class JobDispatchException(
+    val jobId: String,
+    cause: Throwable,
+) : RuntimeException("Failed to dispatch job: $jobId", cause)
+
 @RestControllerAdvice
 class JobExceptionHandler {
     @ExceptionHandler(JobNotFoundException::class)
     fun handleNotFound(ex: JobNotFoundException): ProblemDetail =
         ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.message ?: "Job not found")
+
+    @ExceptionHandler(JobDispatchException::class)
+    fun handleDispatchFailure(ex: JobDispatchException): ProblemDetail =
+        ProblemDetail
+            .forStatusAndDetail(HttpStatus.SERVICE_UNAVAILABLE, ex.message ?: "Failed to dispatch job")
+            .apply { setProperty("jobId", ex.jobId) }
 }

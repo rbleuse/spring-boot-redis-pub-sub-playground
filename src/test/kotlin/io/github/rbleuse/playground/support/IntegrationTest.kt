@@ -5,6 +5,7 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
 import org.testcontainers.containers.GenericContainer
 import org.testcontainers.pulsar.PulsarContainer
 import org.testcontainers.utility.DockerImageName
+import java.time.Duration
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 abstract class IntegrationTest {
@@ -16,7 +17,9 @@ abstract class IntegrationTest {
         @JvmStatic
         @ServiceConnection
         val pulsar: PulsarContainer =
-            PulsarContainer(DockerImageName.parse("apachepulsar/pulsar:4.2.2")).apply { start() }
+            PulsarContainer(DockerImageName.parse("apachepulsar/pulsar:4.2.2"))
+                .withStartupTimeout(Duration.ofMinutes(2))
+                .apply { start() }
 
         @JvmStatic
         @ServiceConnection(name = "redis")

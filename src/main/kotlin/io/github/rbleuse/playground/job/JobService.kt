@@ -25,10 +25,25 @@ class JobService(
                 updatedAt = now,
             ),
         )
-        pulsarTemplate.send(
-            Topics.JOBS_SUBMITTED,
-            JobCommand(jobId, request.name, request.durationMs, request.failureRate),
-        )
+        try {
+            pulsarTemplate.send(
+                Topics.JOBS_SUBMITTED,
+                JobCommand(jobId, request.name, request.durationMs, request.failureRate),
+            )
+        } catch (ex: RuntimeException) {
+            store.save(
+                Job(
+                    jobId = jobId,
+                    name = request.name,
+                    status = JobStatus.FAILED,
+                    progress = 0,
+                    submittedAt = now,
+                    updatedAt = Instant.now(),
+                    error = "Failed to dispatch job: ${ex.message ?: ex.javaClass.simpleName}",
+                ),
+            )
+            throw JobDispatchException(jobId, ex)
+        }
         logger.info("Queued job {} ({})", jobId, request.name)
         return jobId
     }

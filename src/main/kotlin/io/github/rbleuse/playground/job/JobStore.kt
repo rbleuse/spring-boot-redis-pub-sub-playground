@@ -2,6 +2,7 @@ package io.github.rbleuse.playground.job
 
 import io.github.rbleuse.playground.RedisKeys
 import org.springframework.data.redis.core.StringRedisTemplate
+import org.springframework.data.redis.core.script.DefaultRedisScript
 import org.springframework.stereotype.Repository
 import java.time.Duration
 import java.time.Instant
@@ -29,7 +30,32 @@ class JobStore(
             .opsForSet()
             .members(RedisKeys.JOB_INDEX)
             .orEmpty()
-            .mapNotNull { find(it) }
+            .mapNotNull { jobId ->
+                find(jobId) ?: run {
+                    redis.opsForSet().remove(RedisKeys.JOB_INDEX, jobId)
+                    null
+                }
+            }
+
+    fun tryAcquireProcessing(
+        jobId: String,
+        owner: String,
+        lease: Duration,
+    ): Boolean =
+        redis
+            .opsForValue()
+            .setIfAbsent(RedisKeys.processingLock(jobId), owner, lease) == true
+
+    fun releaseProcessing(
+        jobId: String,
+        owner: String,
+    ) {
+        redis.execute(
+            RELEASE_LOCK_SCRIPT,
+            listOf(RedisKeys.processingLock(jobId)),
+            owner,
+        )
+    }
 
     private fun Job.toHash(): Map<String, String> =
         buildMap {
@@ -57,5 +83,15 @@ class JobStore(
 
     companion object {
         private val TERMINAL_TTL: Duration = Duration.ofHours(1)
+        private val RELEASE_LOCK_SCRIPT =
+            DefaultRedisScript(
+                """
+                if redis.call('get', KEYS[1]) == ARGV[1] then
+                    return redis.call('del', KEYS[1])
+                end
+                return 0
+                """.trimIndent(),
+                Long::class.java,
+            )
     }
 }

@@ -17,5 +17,7 @@ object Destinations {
 object RedisKeys {
     fun job(jobId: String) = "job:$jobId"
 
+    fun processingLock(jobId: String) = "job:$jobId:processing"
+
     const val JOB_INDEX = "jobs:index"
 }
