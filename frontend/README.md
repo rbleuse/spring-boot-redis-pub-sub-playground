@@ -34,7 +34,7 @@ src/app/
 
 ### Data flow (the lesson)
 
-1. **On load** — `JobStore` seeds from `GET /jobs` (the Valkey hash survives a refresh), then
+1. **On load** — `JobRepository` seeds from `GET /jobs` (the Valkey hash survives a refresh), then
    `JobStreamService` connects `/ws` and subscribes the firehose `/topic/jobs`; every event is
    merged into the store and the table updates live.
 2. **Submit** — `POST /jobs` returns `202 {jobId}`. No optimistic row is inserted; the firehose

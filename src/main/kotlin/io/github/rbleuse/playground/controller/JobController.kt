@@ -1,5 +1,9 @@
-package io.github.rbleuse.playground.job
+package io.github.rbleuse.playground.controller
 
+import io.github.rbleuse.playground.dto.SubmitJobRequest
+import io.github.rbleuse.playground.dto.SubmitJobResponse
+import io.github.rbleuse.playground.model.Job
+import io.github.rbleuse.playground.service.JobService
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping

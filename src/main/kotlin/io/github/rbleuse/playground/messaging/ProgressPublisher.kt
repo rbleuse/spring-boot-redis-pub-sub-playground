@@ -1,7 +1,8 @@
-package io.github.rbleuse.playground.progress
+package io.github.rbleuse.playground.messaging
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.github.rbleuse.playground.Channels
+import io.github.rbleuse.playground.model.JobProgressEvent
 import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.stereotype.Component
 

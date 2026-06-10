@@ -1,6 +1,7 @@
-package io.github.rbleuse.playground.worker
+package io.github.rbleuse.playground.messaging
 
-import io.github.rbleuse.playground.job.JobCommand
+import io.github.rbleuse.playground.model.JobCommand
+import io.github.rbleuse.playground.service.JobProcessor
 import org.apache.pulsar.client.api.SubscriptionType
 import org.apache.pulsar.common.schema.SchemaType
 import org.springframework.pulsar.annotation.PulsarListener

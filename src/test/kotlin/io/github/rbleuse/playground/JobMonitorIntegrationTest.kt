@@ -2,8 +2,8 @@ package io.github.rbleuse.playground
 
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import io.github.rbleuse.playground.job.SubmitJobResponse
-import io.github.rbleuse.playground.progress.JobProgressEvent
+import io.github.rbleuse.playground.dto.SubmitJobResponse
+import io.github.rbleuse.playground.model.JobProgressEvent
 import io.github.rbleuse.playground.support.IntegrationTest
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test

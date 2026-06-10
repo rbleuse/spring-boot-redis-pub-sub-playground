@@ -1,7 +1,8 @@
-package io.github.rbleuse.playground.progress
+package io.github.rbleuse.playground.messaging
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.github.rbleuse.playground.Destinations
+import io.github.rbleuse.playground.model.JobProgressEvent
 import org.slf4j.LoggerFactory
 import org.springframework.data.redis.connection.Message
 import org.springframework.data.redis.connection.MessageListener

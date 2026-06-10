@@ -67,7 +67,7 @@ All under `io.github.rbleuse.playground`, packaged by feature:
 
 | Package | Contents | Responsibility |
 |---|---|---|
-| `job` | `JobController`, `JobService`, `JobStore`, `Job`, `JobStatus`, DTOs | REST API, job creation, state reads/writes against Valkey hashes |
+| `job` | `JobController`, `JobService`, `JobRepository`, `Job`, `JobStatus`, DTOs | REST API, job creation, state reads/writes against Valkey hashes |
 | `worker` | `JobWorker` (`@PulsarListener`), `JobSimulator` | Consume `JobCommand`s, simulate stepped work, emit progress |
 | `progress` | `ProgressPublisher`, `ProgressSubscriber`, `JobProgressEvent` | Valkey channel publish; subscribe → forward to STOMP broker |
 | `config` | `WebSocketConfig`, `RedisListenerConfig` | STOMP endpoint/broker setup, `RedisMessageListenerContainer` |

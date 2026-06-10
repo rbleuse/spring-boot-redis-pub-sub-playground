@@ -1,6 +1,5 @@
-package io.github.rbleuse.playground.progress
+package io.github.rbleuse.playground.model
 
-import io.github.rbleuse.playground.job.JobStatus
 import java.time.Instant
 
 data class JobProgressEvent(

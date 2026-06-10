@@ -1,4 +1,4 @@
-package io.github.rbleuse.playground.job
+package io.github.rbleuse.playground.model
 
 import org.apache.pulsar.common.schema.SchemaType
 import org.springframework.pulsar.annotation.PulsarMessage

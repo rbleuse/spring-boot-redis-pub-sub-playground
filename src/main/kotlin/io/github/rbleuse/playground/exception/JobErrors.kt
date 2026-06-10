@@ -1,4 +1,4 @@
-package io.github.rbleuse.playground.job
+package io.github.rbleuse.playground.exception
 
 import org.springframework.http.HttpStatus
 import org.springframework.http.ProblemDetail

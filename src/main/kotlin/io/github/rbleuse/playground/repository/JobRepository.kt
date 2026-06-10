@@ -1,6 +1,8 @@
-package io.github.rbleuse.playground.job
+package io.github.rbleuse.playground.repository
 
 import io.github.rbleuse.playground.RedisKeys
+import io.github.rbleuse.playground.model.Job
+import io.github.rbleuse.playground.model.JobStatus
 import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.data.redis.core.script.DefaultRedisScript
 import org.springframework.stereotype.Repository
@@ -8,31 +10,31 @@ import java.time.Duration
 import java.time.Instant
 
 @Repository
-class JobStore(
-    private val redis: StringRedisTemplate,
+class JobRepository(
+    private val template: StringRedisTemplate,
 ) {
     fun save(job: Job) {
         val key = RedisKeys.job(job.jobId)
-        redis.opsForHash<String, String>().putAll(key, job.toHash())
-        redis.opsForSet().add(RedisKeys.JOB_INDEX, job.jobId)
+        template.opsForHash<String, String>().putAll(key, job.toHash())
+        template.opsForSet().add(RedisKeys.JOB_INDEX, job.jobId)
         if (job.status.isTerminal) {
-            redis.expire(key, TERMINAL_TTL)
+            template.expire(key, TERMINAL_TTL)
         }
     }
 
     fun find(jobId: String): Job? {
-        val map = redis.opsForHash<String, String>().entries(RedisKeys.job(jobId))
+        val map = template.opsForHash<String, String>().entries(RedisKeys.job(jobId))
         return if (map.isEmpty()) null else map.toJob()
     }
 
     fun findAll(): List<Job> =
-        redis
+        template
             .opsForSet()
             .members(RedisKeys.JOB_INDEX)
             .orEmpty()
             .mapNotNull { jobId ->
                 find(jobId) ?: run {
-                    redis.opsForSet().remove(RedisKeys.JOB_INDEX, jobId)
+                    template.opsForSet().remove(RedisKeys.JOB_INDEX, jobId)
                     null
                 }
             }
@@ -42,7 +44,7 @@ class JobStore(
         owner: String,
         lease: Duration,
     ): Boolean =
-        redis
+        template
             .opsForValue()
             .setIfAbsent(RedisKeys.processingLock(jobId), owner, lease) == true
 
@@ -50,7 +52,7 @@ class JobStore(
         jobId: String,
         owner: String,
     ) {
-        redis.execute(
+        template.execute(
             RELEASE_LOCK_SCRIPT,
             listOf(RedisKeys.processingLock(jobId)),
             owner,

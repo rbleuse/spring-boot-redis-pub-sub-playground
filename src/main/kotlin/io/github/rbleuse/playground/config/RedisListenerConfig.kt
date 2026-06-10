@@ -1,7 +1,7 @@
 package io.github.rbleuse.playground.config
 
 import io.github.rbleuse.playground.Channels
-import io.github.rbleuse.playground.progress.ProgressSubscriber
+import io.github.rbleuse.playground.messaging.ProgressSubscriber
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.data.redis.connection.RedisConnectionFactory
@@ -15,9 +15,9 @@ class RedisListenerConfig {
         connectionFactory: RedisConnectionFactory,
         subscriber: ProgressSubscriber,
     ): RedisMessageListenerContainer {
-        val container = RedisMessageListenerContainer()
-        container.setConnectionFactory(connectionFactory)
-        container.addMessageListener(subscriber, ChannelTopic(Channels.JOBS_PROGRESS))
-        return container
+        return RedisMessageListenerContainer().apply {
+            setConnectionFactory(connectionFactory)
+            addMessageListener(subscriber, ChannelTopic(Channels.JOBS_PROGRESS))
+        }
     }
 }

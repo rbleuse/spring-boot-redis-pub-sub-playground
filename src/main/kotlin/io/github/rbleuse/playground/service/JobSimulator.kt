@@ -1,4 +1,4 @@
-package io.github.rbleuse.playground.worker
+package io.github.rbleuse.playground.service
 
 import org.springframework.stereotype.Component
 

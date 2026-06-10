@@ -1,4 +1,4 @@
-package io.github.rbleuse.playground.worker
+package io.github.rbleuse.playground.service
 
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test

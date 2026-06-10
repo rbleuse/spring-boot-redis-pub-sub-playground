@@ -1,13 +1,10 @@
-package io.github.rbleuse.playground.instance
+package io.github.rbleuse.playground.config
 
+import io.github.rbleuse.playground.model.InstanceInfo
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import kotlin.random.Random
-
-data class InstanceInfo(
-    val id: String,
-)
 
 @Configuration
 class InstanceConfig {

@@ -1,6 +1,13 @@
-package io.github.rbleuse.playground.job
+package io.github.rbleuse.playground.service
 
 import io.github.rbleuse.playground.Topics
+import io.github.rbleuse.playground.dto.SubmitJobRequest
+import io.github.rbleuse.playground.exception.JobDispatchException
+import io.github.rbleuse.playground.exception.JobNotFoundException
+import io.github.rbleuse.playground.model.Job
+import io.github.rbleuse.playground.model.JobCommand
+import io.github.rbleuse.playground.model.JobStatus
+import io.github.rbleuse.playground.repository.JobRepository
 import org.slf4j.LoggerFactory
 import org.springframework.pulsar.core.PulsarTemplate
 import org.springframework.stereotype.Service
@@ -9,7 +16,7 @@ import java.util.UUID
 
 @Service
 class JobService(
-    private val store: JobStore,
+    private val store: JobRepository,
     private val pulsarTemplate: PulsarTemplate<JobCommand>,
 ) {
     fun submit(request: SubmitJobRequest): String {

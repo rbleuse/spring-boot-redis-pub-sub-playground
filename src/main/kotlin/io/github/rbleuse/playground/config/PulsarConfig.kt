@@ -14,5 +14,5 @@ class PulsarConfig {
      */
     @Bean
     fun schemaResolverCustomizer(objectMapper: ObjectMapper): SchemaResolverCustomizer<DefaultSchemaResolver> =
-        SchemaResolverCustomizer<DefaultSchemaResolver> { resolver -> resolver.setObjectMapper(objectMapper) }
+        SchemaResolverCustomizer { resolver -> resolver.setObjectMapper(objectMapper) }
 }

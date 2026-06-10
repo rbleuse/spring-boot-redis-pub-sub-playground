@@ -1,6 +1,11 @@
-package io.github.rbleuse.playground.job
+package io.github.rbleuse.playground.service
 
 import io.github.rbleuse.playground.Topics
+import io.github.rbleuse.playground.dto.SubmitJobRequest
+import io.github.rbleuse.playground.model.Job
+import io.github.rbleuse.playground.model.JobCommand
+import io.github.rbleuse.playground.model.JobStatus
+import io.github.rbleuse.playground.repository.JobRepository
 import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
@@ -10,7 +15,7 @@ import org.junit.jupiter.api.assertThrows
 import org.springframework.pulsar.core.PulsarTemplate
 
 class JobServiceTest {
-    private val store = mockk<JobStore>(relaxUnitFun = true)
+    private val store = mockk<JobRepository>(relaxUnitFun = true)
     private val pulsarTemplate = mockk<PulsarTemplate<JobCommand>>()
     private val service = JobService(store, pulsarTemplate)
 

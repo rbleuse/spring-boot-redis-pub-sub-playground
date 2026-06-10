@@ -490,9 +490,9 @@ class JobStoreIntegrationTest @Autowired constructor(
 - [ ] **Step 2: Run it to confirm it fails**
 
 Run: `./gradlew test --tests "io.github.rbleuse.playground.job.JobStoreIntegrationTest"`
-Expected: FAIL — `JobStore` does not exist (compilation error).
+Expected: FAIL — `JobRepository` does not exist (compilation error).
 
-- [ ] **Step 3: Implement `JobStore`**
+- [ ] **Step 3: Implement `JobRepository`**
 
 ```kotlin
 package io.github.rbleuse.playground.job

@@ -1,11 +1,10 @@
-package io.github.rbleuse.playground.worker
+package io.github.rbleuse.playground.service
 
-import io.github.rbleuse.playground.instance.InstanceInfo
-import io.github.rbleuse.playground.job.Job
-import io.github.rbleuse.playground.job.JobCommand
-import io.github.rbleuse.playground.job.JobStatus
-import io.github.rbleuse.playground.job.JobStore
-import io.github.rbleuse.playground.progress.ProgressReporter
+import io.github.rbleuse.playground.model.InstanceInfo
+import io.github.rbleuse.playground.model.Job
+import io.github.rbleuse.playground.model.JobCommand
+import io.github.rbleuse.playground.model.JobStatus
+import io.github.rbleuse.playground.repository.JobRepository
 import io.kotest.matchers.shouldBe
 import io.mockk.Called
 import io.mockk.every
@@ -17,12 +16,12 @@ import java.time.Instant
 import kotlin.random.Random
 
 class JobProcessorTest {
-    private val store = mockk<JobStore>(relaxUnitFun = true)
+    private val store = mockk<JobRepository>(relaxUnitFun = true)
     private val reporter = mockk<ProgressReporter>(relaxUnitFun = true)
     private val random = mockk<Random>()
     private val processor =
         JobProcessor(
-            store = store,
+            repository = store,
             reporter = reporter,
             simulator = JobSimulator(steps = 2),
             instance = InstanceInfo("app-test"),

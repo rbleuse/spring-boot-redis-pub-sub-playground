@@ -1,4 +1,4 @@
-package io.github.rbleuse.playground.job
+package io.github.rbleuse.playground.dto
 
 import jakarta.validation.constraints.DecimalMax
 import jakarta.validation.constraints.DecimalMin

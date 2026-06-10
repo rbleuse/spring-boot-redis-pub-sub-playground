@@ -1,11 +1,11 @@
-package io.github.rbleuse.playground.worker
+package io.github.rbleuse.playground.service
 
-import io.github.rbleuse.playground.instance.InstanceInfo
-import io.github.rbleuse.playground.job.Job
-import io.github.rbleuse.playground.job.JobCommand
-import io.github.rbleuse.playground.job.JobStatus
-import io.github.rbleuse.playground.job.JobStore
-import io.github.rbleuse.playground.progress.ProgressReporter
+import io.github.rbleuse.playground.exception.JobAlreadyProcessingException
+import io.github.rbleuse.playground.model.InstanceInfo
+import io.github.rbleuse.playground.model.Job
+import io.github.rbleuse.playground.model.JobCommand
+import io.github.rbleuse.playground.model.JobStatus
+import io.github.rbleuse.playground.repository.JobRepository
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.time.Duration
@@ -13,13 +13,9 @@ import java.time.Instant
 import java.util.UUID
 import kotlin.random.Random
 
-class JobAlreadyProcessingException(
-    jobId: String,
-) : RuntimeException("Job is already being processed: $jobId")
-
 @Service
 class JobProcessor(
-    private val store: JobStore,
+    private val repository: JobRepository,
     private val reporter: ProgressReporter,
     private val simulator: JobSimulator,
     private val instance: InstanceInfo,
@@ -27,19 +23,19 @@ class JobProcessor(
 ) {
     fun process(command: JobCommand) {
         logger.info("Instance {} processing job {} ({})", instance.id, command.jobId, command.name)
-        val existing = store.find(command.jobId)
+        val existing = repository.find(command.jobId)
         if (existing?.status?.isTerminal == true) {
             logger.info("Skipping terminal job {} ({})", command.jobId, existing.status)
             return
         }
         val lease = Duration.ofMillis(command.durationMs.coerceAtLeast(0)).plus(PROCESSING_LOCK_GRACE)
         val lockOwner = "${instance.id}:${UUID.randomUUID()}"
-        if (!store.tryAcquireProcessing(command.jobId, lockOwner, lease)) {
+        if (!repository.tryAcquireProcessing(command.jobId, lockOwner, lease)) {
             throw JobAlreadyProcessingException(command.jobId)
         }
 
         try {
-            var current = store.find(command.jobId) ?: baseJob(command)
+            var current = repository.find(command.jobId) ?: baseJob(command)
             if (current.status.isTerminal) {
                 logger.info("Skipping terminal job {} ({})", command.jobId, current.status)
                 return
@@ -79,7 +75,7 @@ class JobProcessor(
             )
             logger.info("Job {} COMPLETED", command.jobId)
         } finally {
-            store.releaseProcessing(command.jobId, lockOwner)
+            repository.releaseProcessing(command.jobId, lockOwner)
         }
     }
 

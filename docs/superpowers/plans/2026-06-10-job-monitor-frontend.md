@@ -4,7 +4,7 @@
 
 **Goal:** Build a single-page Angular 22 dashboard that submits jobs and shows every job's live progress, consuming the existing backend REST + STOMP contract unchanged.
 
-**Architecture:** Standalone, zoneless, signal-driven Angular app in `frontend/`. A `JobStore` (signals) is the single source of truth; `JobApiService` (HttpClient) seeds it from REST and `JobStreamService` (`@stomp/stompjs`) merges live firehose events. Components are pure signal readers: a submit form, a live MatTable, and a per-job detail dialog.
+**Architecture:** Standalone, zoneless, signal-driven Angular app in `frontend/`. A `JobRepository` (signals) is the single source of truth; `JobApiService` (HttpClient) seeds it from REST and `JobStreamService` (`@stomp/stompjs`) merges live firehose events. Components are pure signal readers: a submit form, a live MatTable, and a per-job detail dialog.
 
 **Tech Stack:** Angular 22 (standalone components, signals, zoneless change detection), Angular Material + CDK, `@stomp/stompjs`, Angular `HttpClient`, Angular CLI test runner (`TestBed`).
 
