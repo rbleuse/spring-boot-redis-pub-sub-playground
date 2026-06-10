@@ -4,24 +4,26 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection
 import org.testcontainers.containers.GenericContainer
 import org.testcontainers.pulsar.PulsarContainer
-import org.testcontainers.junit.jupiter.Container
-import org.testcontainers.junit.jupiter.Testcontainers
 import org.testcontainers.utility.DockerImageName
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Testcontainers
 abstract class IntegrationTest {
 
     companion object {
-        @Container
+        // Singleton containers: started once for the whole test-run JVM and never stopped by
+        // JUnit's @Testcontainers per-class lifecycle. Multiple @SpringBootTest classes share one
+        // Spring context cache; if the containers were torn down between classes, contexts that
+        // reconnect (Pulsar listener / Redis listener container) would fail with "connection refused".
+        @JvmStatic
         @ServiceConnection
-        @JvmStatic
-        val pulsar = PulsarContainer(DockerImageName.parse("apachepulsar/pulsar:4.2.2"))
+        val pulsar: PulsarContainer =
+            PulsarContainer(DockerImageName.parse("apachepulsar/pulsar:4.2.2")).apply { start() }
 
-        @Container
-        @ServiceConnection(name = "redis")
         @JvmStatic
+        @ServiceConnection(name = "redis")
         val valkey: GenericContainer<*> =
-            GenericContainer(DockerImageName.parse("valkey/valkey:9.1.0")).withExposedPorts(6379)
+            GenericContainer(DockerImageName.parse("valkey/valkey:9.1.0"))
+                .withExposedPorts(6379)
+                .apply { start() }
     }
 }

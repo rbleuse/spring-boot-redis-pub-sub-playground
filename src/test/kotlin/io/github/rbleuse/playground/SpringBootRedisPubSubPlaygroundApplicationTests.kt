@@ -1,10 +1,9 @@
 package io.github.rbleuse.playground
 
+import io.github.rbleuse.playground.support.IntegrationTest
 import org.junit.jupiter.api.Test
-import org.springframework.boot.test.context.SpringBootTest
 
-@SpringBootTest
-class SpringBootRedisPubSubPlaygroundApplicationTests {
+class SpringBootRedisPubSubPlaygroundApplicationTests : IntegrationTest() {
 
 	@Test
 	fun contextLoads() {
