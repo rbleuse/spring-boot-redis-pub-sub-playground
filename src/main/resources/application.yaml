@@ -1,6 +1,12 @@
 spring:
   application:
     name: spring-boot-redis-pub-sub-playground
+  docker:
+    compose:
+      stop:
+        # Pulsar standalone keeps BookKeeper state in the container layer and
+        # cannot survive stop/start cycles; remove containers so each run is fresh.
+        command: down
   pulsar:
     producer:
       topic-name: jobs.submitted
