@@ -4,18 +4,32 @@ services:
   pulsar:
     image: 'apachepulsar/pulsar:4.2.2'
     command: [ 'bin/pulsar', 'standalone' ]
+    healthcheck:
+      test: [ 'CMD', 'bin/pulsar-admin', 'brokers', 'healthcheck' ]
+      interval: 2s
+      timeout: 15s
+      retries: 10
+      start_period: 10s
   app1:
     image: 'spring-boot-redis-pub-sub-playground:0.0.1-SNAPSHOT'
     environment:
       SPRING_DATA_REDIS_HOST: valkey
       SPRING_PULSAR_CLIENT_SERVICE_URL: pulsar://pulsar:6650
-    depends_on: [ valkey, pulsar ]
+    depends_on:
+      valkey:
+        condition: service_started
+      pulsar:
+        condition: service_healthy
   app2:
     image: 'spring-boot-redis-pub-sub-playground:0.0.1-SNAPSHOT'
     environment:
       SPRING_DATA_REDIS_HOST: valkey
       SPRING_PULSAR_CLIENT_SERVICE_URL: pulsar://pulsar:6650
-    depends_on: [ valkey, pulsar ]
+    depends_on:
+      valkey:
+        condition: service_started
+      pulsar:
+        condition: service_healthy
   nginx:
     image: 'nginx:1.27'
     volumes:

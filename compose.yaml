@@ -8,6 +8,12 @@ services:
   pulsar:
     image: 'apachepulsar/pulsar:4.2.2'
     command: [ 'bin/pulsar', 'standalone' ]
+    healthcheck:
+      test: [ 'CMD', 'bin/pulsar-admin', 'brokers', 'healthcheck' ]
+      interval: 2s
+      timeout: 15s
+      retries: 10
+      start_period: 10s
     ports:
       - '6650'
       - '8080'
