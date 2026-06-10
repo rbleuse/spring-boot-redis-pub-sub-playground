@@ -187,15 +187,15 @@ dev-time integration):
 
 ## Versions
 
-| Thing | Version |
-|---|---|
-| Spring Boot | 4.1.0-RC1 (as scaffolded) |
-| Kotlin / JVM | 2.4.0 / Java 25 (bump from scaffolded 2.3.20) |
-| Valkey | 9.1.0 (`valkey/valkey:9.1.0`) |
-| Apache Pulsar | 4.2.2 (`apachepulsar/pulsar:4.2.2`) |
-| Kotest assertions | 6.1.11 |
-| Testcontainers, Spring Pulsar, Spring Data Redis | managed by Spring Boot BOM |
-| Angular | 22.0.0 (phase 2, not in this spec) |
+| Thing | Version                               |
+|---|---------------------------------------|
+| Spring Boot | 4.1.0-RC1 (as scaffolded)             |
+| Kotlin / JVM | 2.4.0 / Java 25 (as scaffolded) |
+| Valkey | 9.1.0 (`valkey/valkey:9.1.0`)         |
+| Apache Pulsar | 4.2.2 (`apachepulsar/pulsar:4.2.2`)   |
+| Kotest assertions | 6.1.11                                |
+| Testcontainers, Spring Pulsar, Spring Data Redis | managed by Spring Boot BOM            |
+| Angular | 22.0.0 (phase 2, not in this spec)    |
 
 New dependencies to add (starters first, per Boot 4 naming — exact artifact ids confirmed
 against the Boot 4.1 dependency BOM during implementation): web MVC, websocket,
