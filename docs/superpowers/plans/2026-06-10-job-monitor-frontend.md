@@ -561,7 +561,7 @@ Expected: FAIL — `Cannot find module './job-stream.service'`.
 
 `frontend/src/app/core/job-stream.service.ts`:
 ```ts
-import { Injectable, inject, signal } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { Client, IMessage, StompSubscription } from '@stomp/stompjs';
 import { environment } from '../../environments/environment';
 import { JobProgressEvent } from './job.models';
@@ -571,16 +571,14 @@ export type ConnectionStatus = 'closed' | 'reconnecting' | 'connected';
 
 @Injectable({ providedIn: 'root' })
 export class JobStreamService {
-  private readonly store = inject(JobStore);
   private client?: Client;
   private firehose?: StompSubscription;
 
   readonly status = signal<ConnectionStatus>('closed');
 
-  constructor(store?: JobStore) {
-    // Allow construction with an explicit store in unit tests.
-    if (store) { (this as unknown as { store: JobStore }).store = store; }
-  }
+  // Constructor injection (not field `inject()`): lets the unit test build the service
+  // with `new TestableStream(store)` outside an Angular injection context.
+  constructor(private readonly store: JobStore) {}
 
   /** Overridable for tests. */
   protected createClient(): Client {
@@ -622,7 +620,7 @@ export class JobStreamService {
 }
 ```
 
-Note: the `constructor(store?)` shim lets the spec pass a `JobStore` directly while `inject()` covers the DI path. If the project's lint forbids the shim, the test can instead use `TestBed.configureTestingModule({ providers: [JobStreamService, { provide: JobStore, useValue: store }] })` and subclass via a provider override — keep whichever the codebase style prefers.
+Note: the test subclasses the service (`TestableStream extends JobStreamService`) with no explicit constructor, so it inherits `constructor(store)`. `new TestableStream(store)` passes the store directly and `createClient()` is overridden to return the fake — no Angular injection context needed.
 
 - [ ] **Step 4: Run test to verify it passes**
 
