@@ -14,10 +14,9 @@ class RedisListenerConfig {
     fun redisMessageListenerContainer(
         connectionFactory: RedisConnectionFactory,
         subscriber: ProgressSubscriber,
-    ): RedisMessageListenerContainer {
-        return RedisMessageListenerContainer().apply {
+    ): RedisMessageListenerContainer =
+        RedisMessageListenerContainer().apply {
             setConnectionFactory(connectionFactory)
             addMessageListener(subscriber, ChannelTopic(Channels.JOBS_PROGRESS))
         }
-    }
 }
