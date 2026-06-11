@@ -33,7 +33,8 @@ dependencies {
 	runtimeOnly("com.julien-dubois.bootui:bootui-spring-boot-starter:1.2.0")
 
 	constraints {
-		implementation("io.opentelemetry:opentelemetry-api-incubator:1.62.0-alpha")
+		// pulsar-client-all drags in an older incubator; keep it aligned with the Boot-managed OTel version
+		implementation("io.opentelemetry:opentelemetry-api-incubator:${dependencyManagement.importedProperties["opentelemetry.version"]}-alpha")
 	}
 
 	developmentOnly("org.springframework.boot:spring-boot-docker-compose")
