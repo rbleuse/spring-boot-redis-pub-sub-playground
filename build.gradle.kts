@@ -30,6 +30,11 @@ dependencies {
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
+	runtimeOnly("com.julien-dubois.bootui:bootui-spring-boot-starter:1.2.0")
+
+	constraints {
+		implementation("io.opentelemetry:opentelemetry-api-incubator:1.62.0-alpha")
+	}
 
 	developmentOnly("org.springframework.boot:spring-boot-docker-compose")
 

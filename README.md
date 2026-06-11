@@ -16,6 +16,12 @@ WebSocket — bridged by Valkey Pub/Sub.
 ```
 Spring Boot Docker Compose support starts Valkey + Pulsar automatically.
 
+BootUI developer console (local profile only):
+```bash
+./gradlew bootRun --args="--spring.profiles.active=local"
+```
+Open http://localhost:8080/bootui.
+
 Submit a job:
 ```bash
 curl -X POST http://localhost:8080/jobs \
