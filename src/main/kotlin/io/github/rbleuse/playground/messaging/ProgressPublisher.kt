@@ -8,10 +8,10 @@ import org.springframework.stereotype.Component
 
 @Component
 class ProgressPublisher(
-    private val redis: StringRedisTemplate,
+    private val template: StringRedisTemplate,
     private val objectMapper: ObjectMapper,
 ) {
     fun publish(event: JobProgressEvent) {
-        redis.convertAndSend(Channels.JOBS_PROGRESS, objectMapper.writeValueAsString(event))
+        template.convertAndSend(Channels.JOBS_PROGRESS, objectMapper.writeValueAsString(event))
     }
 }

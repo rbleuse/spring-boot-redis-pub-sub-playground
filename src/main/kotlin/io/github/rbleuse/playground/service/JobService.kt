@@ -16,13 +16,13 @@ import java.util.UUID
 
 @Service
 class JobService(
-    private val store: JobRepository,
+    private val repository: JobRepository,
     private val pulsarTemplate: PulsarTemplate<JobCommand>,
 ) {
     fun submit(request: SubmitJobRequest): String {
         val jobId = UUID.randomUUID().toString()
         val now = Instant.now()
-        store.save(
+        repository.save(
             Job(
                 jobId = jobId,
                 name = request.name,
@@ -38,7 +38,7 @@ class JobService(
                 JobCommand(jobId, request.name, request.durationMs, request.failureRate),
             )
         } catch (ex: RuntimeException) {
-            store.save(
+            repository.save(
                 Job(
                     jobId = jobId,
                     name = request.name,
@@ -55,9 +55,9 @@ class JobService(
         return jobId
     }
 
-    fun get(jobId: String): Job = store.find(jobId) ?: throw JobNotFoundException(jobId)
+    fun get(jobId: String): Job = repository.find(jobId) ?: throw JobNotFoundException(jobId)
 
-    fun list(): List<Job> = store.findAll()
+    fun list(): List<Job> = repository.findAll()
 
     companion object {
         private val logger = LoggerFactory.getLogger(JobService::class.java)
