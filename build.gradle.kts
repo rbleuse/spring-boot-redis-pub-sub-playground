@@ -33,7 +33,7 @@ dependencies {
 	runtimeOnly("com.julien-dubois.bootui:bootui-spring-boot-starter:1.2.0")
 
 	constraints {
-		implementation("io.opentelemetry:opentelemetry-api-incubator:1.62.0-alpha")
+		implementation("io.opentelemetry:opentelemetry-api-incubator:1.63.0-alpha")
 	}
 
 	developmentOnly("org.springframework.boot:spring-boot-docker-compose")
