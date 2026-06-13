@@ -1,0 +1,27 @@
+<div appCard>
+  <div appCardHeader><div appCardTitle>Submit a job</div></div>
+  <div appCardContent>
+    <form [formGroup]="form" (ngSubmit)="submit()" class="flex flex-wrap items-end gap-4">
+      <div class="grid gap-1.5">
+        <label appLabel for="name">Name</label>
+        <input appInput id="name" formControlName="name" maxlength="100" placeholder="my-job" />
+      </div>
+      <div class="grid gap-1.5">
+        <label appLabel for="durationMs">Duration (ms)</label>
+        <input appInput id="durationMs" type="number" formControlName="durationMs" min="1000" max="120000" />
+      </div>
+      <div class="grid gap-1.5">
+        <label appLabel for="failureRate">Failure rate</label>
+        <input appInput id="failureRate" type="number" formControlName="failureRate" min="0" max="1" step="0.05" />
+      </div>
+      <div class="grid gap-1.5">
+        <label appLabel for="scheduledAt">Scheduled at</label>
+        <input appInput id="scheduledAt" type="datetime-local" formControlName="scheduledAt" />
+      </div>
+      <button appBtn type="submit" [disabled]="form.invalid">Submit</button>
+      @if (notice()) {
+        <span class="text-sm text-muted-foreground">{{ notice() }}</span>
+      }
+    </form>
+  </div>
+</div>

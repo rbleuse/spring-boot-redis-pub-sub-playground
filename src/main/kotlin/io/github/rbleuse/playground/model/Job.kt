@@ -3,13 +3,15 @@ package io.github.rbleuse.playground.model
 import java.time.Instant
 
 enum class JobStatus {
+    SCHEDULED,
     QUEUED,
     RUNNING,
     COMPLETED,
     FAILED,
+    CANCELLED,
     ;
 
-    val isTerminal: Boolean get() = this == COMPLETED || this == FAILED
+    val isTerminal: Boolean get() = this == COMPLETED || this == FAILED || this == CANCELLED
 }
 
 data class Job(
@@ -19,6 +21,7 @@ data class Job(
     val progress: Int,
     val submittedAt: Instant,
     val updatedAt: Instant,
+    val scheduledAt: Instant? = null,
     val workerId: String? = null,
     val error: String? = null,
 ) {
@@ -28,6 +31,7 @@ data class Job(
             name = name,
             status = status,
             progress = progress,
+            scheduledAt = scheduledAt,
             workerId = workerId,
             error = error,
             timestamp = updatedAt,

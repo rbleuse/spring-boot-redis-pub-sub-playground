@@ -28,6 +28,16 @@ curl -X POST http://localhost:8080/jobs \
   -H "Content-Type: application/json" \
   -d '{"name":"demo","durationMs":5000,"failureRate":0.0}'
 ```
+Schedule one for an absolute UTC time:
+```bash
+curl -X POST http://localhost:8080/jobs \
+  -H "Content-Type: application/json" \
+  -d '{"name":"later","scheduledAt":"2026-06-12T12:00:00Z"}'
+```
+The API stores `scheduledAt`; Pulsar receives the equivalent `deliverAfter` delay.
+Cancel before it starts: `curl -X POST http://localhost:8080/jobs/<jobId>/cancel`.
+Pulsar still delivers the delayed message; the worker sees `CANCELLED`, acknowledges,
+and drops it.
 Poll its state: `curl http://localhost:8080/jobs/<jobId>`.
 Connect a STOMP client to `ws://localhost:8080/ws` and subscribe to
 `/topic/jobs/<jobId>` (single job) or `/topic/jobs` (all jobs).
@@ -42,21 +52,25 @@ one replica processes it, but events still reach a WebSocket held by the other.
 
 ## Frontend
 
-An Angular 22 dashboard lives in `frontend/`: submit jobs and watch a live table
-fill from the `/topic/jobs` firehose.
+Two dashboards, same idea: submit jobs and watch a live table fill from the
+`/topic/jobs` firehose.
+
+- `frontend-angular/` — Angular 22 + Material
+- `frontend-react/` — React 19 + Vite (also covers `scheduledAt` and cancel)
 
 ### Dev
 ```bash
-cd frontend && npm start
+cd frontend-angular && npm start   # http://localhost:4200
+cd frontend-react && npm run dev   # http://localhost:5173
 ```
-Serves the dashboard on http://localhost:4200 against the backend on `:8080`
-(CORS already allows `:4200`). STOMP connects to `ws://localhost:8080/ws`.
+Both run against the backend on `:8080` (CORS must allow the dev origin).
+STOMP connects to `ws://localhost:8080/ws`.
 
 ### Cluster
 ```bash
-cd frontend && npm run build
+cd frontend-angular && npm run build
 ```
-This produces `frontend/dist/frontend/browser`, which nginx serves as static
+This produces `frontend-angular/dist/frontend/browser`, which nginx serves as static
 files (REST `/jobs` and the `/ws` WebSocket still proxy to the app replicas).
 Build the app image first (see above), then bring the stack up:
 ```bash
@@ -68,8 +82,8 @@ Open http://localhost:8080, submit a job, and watch the live table fill from the
 
 ## Architecture
 ```
-POST /jobs ──► instance X ──► Pulsar (jobs.submitted, Shared sub)
-                  │ writes QUEUED hash to Valkey        │
+POST /jobs ──► instance X ──► Pulsar (jobs.submitted, optional deliverAfter)
+                  │ writes QUEUED/SCHEDULED hash        │
                   │                                      ▼
                   │                            instance Y processes
                   │                            updates Valkey hash +
@@ -84,7 +98,8 @@ POST /jobs ──► instance X ──► Pulsar (jobs.submitted, Shared sub)
 ## Endpoints
 | Method | Path | Description |
 |---|---|---|
-| POST | `/jobs` | Submit a job (`name`, `durationMs`, `failureRate`) → `202` + `jobId` |
+| POST | `/jobs` | Submit a job (`name`, `durationMs`, `failureRate`, optional future `scheduledAt`) → `202` + `jobId` |
+| POST | `/jobs/{id}/cancel` | Cancel a `SCHEDULED` job; `409` after processing starts |
 | GET | `/jobs/{id}` | Current snapshot (recovers state missed over Pub/Sub) |
 | GET | `/jobs` | All known jobs |
 

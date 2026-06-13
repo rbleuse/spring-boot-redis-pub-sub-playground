@@ -40,11 +40,34 @@ class JobProcessorTest {
     }
 
     @Test
+    fun `cancelled delayed jobs are acknowledged without processing`() {
+        val command = command()
+        every { store.find(command.jobId) } returns job(status = JobStatus.CANCELLED)
+
+        processor.process(command)
+
+        verify { reporter wasNot Called }
+        verify { random wasNot Called }
+    }
+
+    @Test
+    fun `jobs without stored state are skipped, never fabricated`() {
+        val command = command()
+        every { store.find(command.jobId) } returns null
+
+        processor.process(command)
+
+        verify { reporter wasNot Called }
+        verify(exactly = 0) { store.tryAcquireProcessing(any(), any(), any()) }
+    }
+
+    @Test
     fun `failure preserves progress from completed steps`() {
         val command = command(failureRate = 0.5)
         val lockOwner = slot<String>()
         every { store.find(command.jobId) } returns job()
         every { store.tryAcquireProcessing(command.jobId, capture(lockOwner), any()) } returns true
+        every { store.tryStart(command.jobId, any()) } returns true
         every { random.nextDouble() } returnsMany listOf(1.0, 0.0)
 
         processor.process(command)

@@ -1,0 +1,61 @@
+<div appCard>
+  <div appCardHeader><div appCardTitle>Jobs</div></div>
+  <div appCardContent>
+    <div class="relative w-full overflow-x-auto">
+      <table appTable>
+        <thead appTableHeader>
+          <tr appTableRow>
+            <th appTableHead>Job</th>
+            <th appTableHead>Status</th>
+            <th appTableHead class="w-[220px]">Progress</th>
+            <th appTableHead>Scheduled at</th>
+            <th appTableHead>Worker</th>
+            <th appTableHead>Updated</th>
+            <th appTableHead></th>
+          </tr>
+        </thead>
+        <tbody appTableBody>
+          @for (job of jobs(); track job.jobId) {
+            <tr appTableRow>
+              <td appTableCell>
+                <div class="font-medium">{{ job.name }}</div>
+                <div class="text-xs text-muted-foreground">{{ job.jobId }}</div>
+              </td>
+              <td appTableCell>
+                <span appBadge [variant]="badge(job.status).variant" [class]="badge(job.status).class">
+                  {{ job.status }}
+                </span>
+                @if (job.error) {
+                  <div class="mt-1 text-xs text-destructive">{{ job.error }}</div>
+                }
+              </td>
+              <td appTableCell>
+                <div class="flex items-center gap-2">
+                  <app-progress [value]="job.progress" class="w-36" />
+                  <span class="text-xs tabular-nums">{{ job.progress }}%</span>
+                </div>
+              </td>
+              <td appTableCell>{{ job.scheduledAt ? (job.scheduledAt | date: 'short') : '—' }}</td>
+              <td appTableCell>{{ job.workerId ?? '—' }}</td>
+              <td appTableCell>{{ job.updatedAt | date: 'mediumTime' }}</td>
+              <td appTableCell>
+                @if (!isTerminal(job.status)) {
+                  <button appBtn variant="outline" size="sm" (click)="cancel(job)">Cancel</button>
+                }
+              </td>
+            </tr>
+          } @empty {
+            <tr appTableRow>
+              <td appTableCell colspan="7" class="text-center text-muted-foreground">
+                No jobs yet — submit one above.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    @if (notice()) {
+      <div class="mt-2 text-sm text-destructive">{{ notice() }}</div>
+    }
+  </div>
+</div>

@@ -13,7 +13,7 @@ class WebSocketConfig : WebSocketMessageBrokerConfigurer {
         // No SockJS: a single persistent connection avoids sticky-session needs behind nginx.
         registry
             .addEndpoint("/ws")
-            .setAllowedOrigins("http://localhost:4200", "http://localhost:8080")
+            .setAllowedOrigins("http://localhost:4200", "http://localhost:5173", "http://localhost:8080")
     }
 
     override fun configureMessageBroker(registry: MessageBrokerRegistry) {

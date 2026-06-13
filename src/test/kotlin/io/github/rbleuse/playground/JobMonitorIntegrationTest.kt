@@ -21,6 +21,7 @@ import org.springframework.web.client.RestClient
 import org.springframework.web.socket.client.standard.StandardWebSocketClient
 import org.springframework.web.socket.messaging.WebSocketStompClient
 import java.lang.reflect.Type
+import java.time.Instant
 import java.util.concurrent.LinkedBlockingDeque
 import java.util.concurrent.TimeUnit
 
@@ -69,9 +70,16 @@ class JobMonitorIntegrationTest
             name: String,
             durationMs: Long = 2000,
             failureRate: Double = 0.0,
+            scheduledAt: Instant? = null,
         ): String {
             val headers = HttpHeaders().apply { contentType = MediaType.APPLICATION_JSON }
-            val body = mapOf("name" to name, "durationMs" to durationMs, "failureRate" to failureRate)
+            val body =
+                buildMap<String, Any> {
+                    put("name", name)
+                    put("durationMs", durationMs)
+                    put("failureRate", failureRate)
+                    scheduledAt?.let { put("scheduledAt", it) }
+                }
             return rest
                 .post()
                 .uri("http://localhost:$port/jobs")
@@ -81,6 +89,13 @@ class JobMonitorIntegrationTest
                 .body(SubmitJobResponse::class.java)!!
                 .jobId
         }
+
+        private fun cancel(jobId: String): Map<*, *> =
+            rest
+                .post()
+                .uri("http://localhost:$port/jobs/$jobId/cancel")
+                .retrieve()
+                .body(Map::class.java)!!
 
         private fun jobSnapshot(jobId: String): Map<*, *> =
             rest
@@ -124,6 +139,31 @@ class JobMonitorIntegrationTest
                 Thread.sleep(250)
             }
             status shouldBe "COMPLETED"
+        }
+
+        @Test
+        fun `scheduled job waits for Pulsar delayed delivery`() {
+            val jobId = submit("scheduled-job", durationMs = 1000, scheduledAt = Instant.now().plusSeconds(2))
+
+            jobSnapshot(jobId)["status"] shouldBe "SCHEDULED"
+
+            var status = ""
+            val deadline = System.currentTimeMillis() + 15_000
+            while (System.currentTimeMillis() < deadline && status != "COMPLETED") {
+                status = jobSnapshot(jobId)["status"] as String
+                Thread.sleep(250)
+            }
+            status shouldBe "COMPLETED"
+        }
+
+        @Test
+        fun `cancelled scheduled job stays cancelled after delayed delivery`() {
+            val jobId = submit("cancelled-job", durationMs = 1000, scheduledAt = Instant.now().plusSeconds(2))
+
+            cancel(jobId)["status"] shouldBe "CANCELLED"
+            Thread.sleep(3000)
+
+            jobSnapshot(jobId)["status"] shouldBe "CANCELLED"
         }
 
         @Test

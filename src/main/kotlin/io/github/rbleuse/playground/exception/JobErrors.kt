@@ -14,6 +14,11 @@ class JobDispatchException(
     cause: Throwable,
 ) : RuntimeException("Failed to dispatch job: $jobId", cause)
 
+class JobCancellationException(
+    jobId: String,
+    status: String,
+) : RuntimeException("Job $jobId cannot be cancelled while $status")
+
 @RestControllerAdvice
 class JobExceptionHandler {
     @ExceptionHandler(JobNotFoundException::class)
@@ -25,4 +30,8 @@ class JobExceptionHandler {
         ProblemDetail
             .forStatusAndDetail(HttpStatus.SERVICE_UNAVAILABLE, ex.message ?: "Failed to dispatch job")
             .apply { setProperty("jobId", ex.jobId) }
+
+    @ExceptionHandler(JobCancellationException::class)
+    fun handleCancellationFailure(ex: JobCancellationException): ProblemDetail =
+        ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.message ?: "Job cannot be cancelled")
 }

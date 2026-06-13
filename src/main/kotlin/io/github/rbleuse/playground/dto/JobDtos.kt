@@ -2,10 +2,12 @@ package io.github.rbleuse.playground.dto
 
 import jakarta.validation.constraints.DecimalMax
 import jakarta.validation.constraints.DecimalMin
+import jakarta.validation.constraints.Future
 import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
+import java.time.Instant
 
 data class SubmitJobRequest(
     @field:NotBlank
@@ -17,6 +19,8 @@ data class SubmitJobRequest(
     @field:DecimalMin("0.0")
     @field:DecimalMax("1.0")
     val failureRate: Double = 0.0,
+    @field:Future
+    val scheduledAt: Instant? = null,
 )
 
 data class SubmitJobResponse(

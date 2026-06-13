@@ -1,6 +1,7 @@
 package io.github.rbleuse.playground.config
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import org.apache.pulsar.client.api.DeadLetterPolicy
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.pulsar.core.DefaultSchemaResolver
@@ -15,4 +16,12 @@ class PulsarConfig {
     @Bean
     fun schemaResolverCustomizer(objectMapper: ObjectMapper): SchemaResolverCustomizer<DefaultSchemaResolver> =
         SchemaResolverCustomizer { resolver -> resolver.setObjectMapper(objectMapper) }
+
+    @Bean
+    fun jobsDeadLetterPolicy(): DeadLetterPolicy =
+        DeadLetterPolicy
+            .builder()
+            .maxRedeliverCount(5)
+            .deadLetterTopic("jobs.submitted.dlq")
+            .build()
 }

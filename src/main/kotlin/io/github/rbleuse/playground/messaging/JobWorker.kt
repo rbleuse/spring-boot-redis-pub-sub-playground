@@ -16,6 +16,12 @@ class JobWorker(
         topics = ["jobs.submitted"],
         subscriptionType = [SubscriptionType.Shared],
         schemaType = SchemaType.JSON,
+        // Jobs block the listener thread for their full duration (max 120s),
+        // so a single thread would serialize all processing per instance.
+        concurrency = "4",
+        // Bounds the nack/redeliver loop when the processing lock is contended;
+        // the count is high enough for redelivery to outlive a dead worker's lease.
+        deadLetterPolicy = "jobsDeadLetterPolicy",
     )
     fun onJobSubmitted(command: JobCommand) {
         processor.process(command)

@@ -7,6 +7,7 @@ data class JobProgressEvent(
     val name: String,
     val status: JobStatus,
     val progress: Int,
+    val scheduledAt: Instant?,
     val workerId: String?,
     val error: String?,
     val timestamp: Instant,

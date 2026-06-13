@@ -82,4 +82,37 @@ class JobRepositoryIntegrationTest
             repository.tryAcquireProcessing(jobId, "owner-b", Duration.ofMinutes(1)) shouldBe true
             repository.releaseProcessing(jobId, "owner-b")
         }
+
+        @Test
+        fun `cancellation wins against worker start atomically`() {
+            val job = newJob(status = JobStatus.SCHEDULED)
+            repository.save(job)
+
+            repository.tryCancel(job.jobId, Instant.now()).shouldBeNull()
+            repository.tryStart(job.jobId, Instant.now()) shouldBe false
+            repository.find(job.jobId)!!.status shouldBe JobStatus.CANCELLED
+        }
+
+        @Test
+        fun `worker start wins against cancellation atomically`() {
+            val job = newJob(status = JobStatus.SCHEDULED)
+            repository.save(job)
+
+            repository.tryStart(job.jobId, Instant.now()) shouldBe true
+            repository.tryCancel(job.jobId, Instant.now()) shouldBe "RUNNING"
+            repository.find(job.jobId)!!.status shouldBe JobStatus.RUNNING
+        }
+
+        @Test
+        fun `tryCancel reports a missing job as empty status`() {
+            repository.tryCancel("does-not-exist", Instant.now()) shouldBe ""
+        }
+
+        @Test
+        fun `worker can take over a job stuck in RUNNING`() {
+            val job = newJob(status = JobStatus.RUNNING)
+            repository.save(job)
+
+            repository.tryStart(job.jobId, Instant.now()) shouldBe true
+        }
     }

@@ -35,6 +35,11 @@ class JobController(
         @PathVariable jobId: String,
     ): Job = service.get(jobId)
 
+    @PostMapping("/{jobId}/cancel")
+    fun cancel(
+        @PathVariable jobId: String,
+    ): Job = service.cancel(jobId)
+
     @GetMapping
     fun list(): List<Job> = service.list()
 }

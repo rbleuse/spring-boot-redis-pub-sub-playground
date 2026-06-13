@@ -2,7 +2,6 @@ package io.github.rbleuse.playground.service
 
 import io.github.rbleuse.playground.exception.JobAlreadyProcessingException
 import io.github.rbleuse.playground.model.InstanceInfo
-import io.github.rbleuse.playground.model.Job
 import io.github.rbleuse.playground.model.JobCommand
 import io.github.rbleuse.playground.model.JobStatus
 import io.github.rbleuse.playground.repository.JobRepository
@@ -23,8 +22,14 @@ class JobProcessor(
 ) {
     fun process(command: JobCommand) {
         logger.info("Instance {} processing job {} ({})", instance.id, command.jobId, command.name)
-        val existing = repository.find(command.jobId)
-        if (existing?.status?.isTerminal == true) {
+        // submit() saves before dispatching, so a missing hash means the job expired
+        // (e.g. cancelled long before its delayed delivery) — never fabricate state.
+        val existing =
+            repository.find(command.jobId) ?: run {
+                logger.info("Skipping job {} with no stored state", command.jobId)
+                return
+            }
+        if (existing.status.isTerminal) {
             logger.info("Skipping terminal job {} ({})", command.jobId, existing.status)
             return
         }
@@ -35,11 +40,11 @@ class JobProcessor(
         }
 
         try {
-            var current = repository.find(command.jobId) ?: baseJob(command)
-            if (current.status.isTerminal) {
-                logger.info("Skipping terminal job {} ({})", command.jobId, current.status)
+            if (!repository.tryStart(command.jobId, Instant.now())) {
+                logger.info("Skipping job {} in state {}", command.jobId, repository.find(command.jobId)?.status)
                 return
             }
+            var current = existing
 
             for (step in 1..simulator.totalSteps) {
                 Thread.sleep(simulator.stepDelayMs(command.durationMs))
@@ -78,16 +83,6 @@ class JobProcessor(
             repository.releaseProcessing(command.jobId, lockOwner)
         }
     }
-
-    private fun baseJob(command: JobCommand) =
-        Job(
-            jobId = command.jobId,
-            name = command.name,
-            status = JobStatus.QUEUED,
-            progress = 0,
-            submittedAt = Instant.now(),
-            updatedAt = Instant.now(),
-        )
 
     companion object {
         private val PROCESSING_LOCK_GRACE: Duration = Duration.ofSeconds(30)
