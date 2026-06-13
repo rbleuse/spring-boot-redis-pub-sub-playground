@@ -30,7 +30,7 @@ dependencies {
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
-	runtimeOnly("com.julien-dubois.bootui:bootui-spring-boot-starter:1.2.0")
+	runtimeOnly("com.julien-dubois.bootui:bootui-spring-boot-starter:1.4.0")
 
 	constraints {
 		// pulsar-client-all drags in an older incubator; keep it aligned with the Boot-managed OTel version
