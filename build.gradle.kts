@@ -44,7 +44,7 @@ dependencies {
 	testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
 	testImplementation("org.testcontainers:testcontainers-junit-jupiter")
 	testImplementation("org.testcontainers:testcontainers-pulsar")
-	testImplementation("io.kotest:kotest-assertions-core:6.1.11")
+	testImplementation("io.kotest:kotest-assertions-core:6.2.1")
 	testImplementation("com.ninja-squad:springmockk:5.0.1")
 	testImplementation("org.awaitility:awaitility")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
