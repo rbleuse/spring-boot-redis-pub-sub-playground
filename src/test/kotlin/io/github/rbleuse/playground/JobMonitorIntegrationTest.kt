@@ -1,7 +1,5 @@
 package io.github.rbleuse.playground
 
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.github.rbleuse.playground.dto.SubmitJobResponse
 import io.github.rbleuse.playground.model.JobProgressEvent
 import io.github.rbleuse.playground.support.IntegrationTest
@@ -9,10 +7,9 @@ import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.web.server.LocalServerPort
-import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
-import org.springframework.messaging.converter.MappingJackson2MessageConverter
+import org.springframework.messaging.converter.JacksonJsonMessageConverter
 import org.springframework.messaging.simp.stomp.StompFrameHandler
 import org.springframework.messaging.simp.stomp.StompHeaders
 import org.springframework.messaging.simp.stomp.StompSession
@@ -34,13 +31,7 @@ class JobMonitorIntegrationTest
 
         private fun stompSession(): StompSession {
             val client = WebSocketStompClient(StandardWebSocketClient())
-            // The stock MappingJackson2MessageConverter uses a bare ObjectMapper with no
-            // JavaTimeModule, so it cannot deserialize JobProgressEvent.timestamp (an Instant).
-            // Register Kotlin + JavaTime modules to match how the server serializes events.
-            client.messageConverter =
-                MappingJackson2MessageConverter().apply {
-                    objectMapper = jacksonObjectMapper().registerModule(JavaTimeModule())
-                }
+            client.messageConverter = JacksonJsonMessageConverter()
             return client
                 .connectAsync(
                     "ws://localhost:$port/ws",
