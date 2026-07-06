@@ -8,7 +8,7 @@ specs under [`docs/superpowers/`](../docs/superpowers).
 ## Stack
 
 - **Angular 22** — standalone components, signals, **zoneless** change detection.
-- **Angular Material** + CDK (table, progress bar, dialog, form fields, toolbar, snackbar).
+- **Tailwind CSS** — plain Angular templates, no component wrapper layer.
 - **`@stomp/stompjs`** — STOMP over a plain WebSocket (`/ws`, no SockJS).
 - **Vitest** test runner (CLI 22 default — not Karma/Jasmine).
 
@@ -22,12 +22,11 @@ src/app/
     job.models.ts          Job, JobProgressEvent, SubmitJobRequest/Response, mergeEvent()
     job-api.service.ts     HttpClient: POST /jobs, GET /jobs, GET /jobs/{id}
     job-store.ts           signal state (Map<jobId,Job>); single source of truth
-    job-stream.service.ts  STOMP client: connect /ws, subscribe topics, connection-status signal
+    job-stream.service.ts  STOMP client: connect /ws, subscribe firehose, connection-status signal
   dashboard/
     dashboard.ts           toolbar (status badge) + submit form + jobs table
     submit-form.ts         reactive form; validators mirror backend Bean Validation
-    jobs-table.ts          live MatTable; row click → detail dialog
-    job-detail-dialog.ts   GET snapshot then subscribe /topic/jobs/{id}; live progress + event log
+    jobs-table.ts          live table fed by JobStore
   app.config.ts            providers: zoneless CD, HttpClient
   environments/            dev → backend on :8080; prod → same-origin behind nginx
 ```
@@ -39,9 +38,8 @@ src/app/
    merged into the store and the table updates live.
 2. **Submit** — `POST /jobs` returns `202 {jobId}`. No optimistic row is inserted; the firehose
    `QUEUED` event creates it, making the Pulsar/Valkey round-trip visible.
-3. **Detail dialog** — opens with `GET /jobs/{id}` (state recovery; `404` → "expired (TTL)"),
-   then subscribes `/topic/jobs/{id}` for that job's live stream. Unsubscribes on close; the
-   firehose subscription stays.
+3. **Cancel** — scheduled jobs can be cancelled before a worker starts them; the next firehose
+   event updates the row.
 
 ## Develop
 
@@ -61,7 +59,7 @@ npm test -- --watch=false     # Vitest, single run
 ```
 
 Specs use `TestBed` with `describe/it/expect`. Coverage: store merge/seed/sort, REST service
-URLs (HttpTestingController), STOMP stream against a fake broker, form validators, table render.
+URLs (HttpTestingController), STOMP firehose against a fake broker, form validators, table render.
 
 ## Build
 
@@ -75,15 +73,15 @@ the cluster demo — `compose-cluster.yaml` bind-mounts `dist/frontend/browser/`
 
 ## Backend contract (do not change here)
 
-| | |
-|---|---|
-| `POST /jobs` | `{ name (1–100), durationMs? (1000–120000, def 10000), failureRate? (0.0–1.0, def 0.0) }` → `202 { jobId }` |
-| `GET /jobs` | list of job snapshots |
-| `GET /jobs/{id}` | job snapshot, `404` if expired |
-| STOMP `/ws` | topics `/topic/jobs` (firehose) and `/topic/jobs/{id}` |
+|                  |                                                                                                             |
+| ---------------- | ----------------------------------------------------------------------------------------------------------- |
+| `POST /jobs`     | `{ name (1–100), durationMs? (1000–120000, def 10000), failureRate? (0.0–1.0, def 0.0) }` → `202 { jobId }` |
+| `GET /jobs`      | list of job snapshots                                                                                       |
+| `GET /jobs/{id}` | job snapshot, `404` if expired                                                                              |
+| STOMP `/ws`      | topics `/topic/jobs` (firehose) and `/topic/jobs/{id}`                                                      |
 
-Event/snapshot fields: `jobId, name, status (QUEUED|RUNNING|COMPLETED|FAILED), progress (0–100),
-workerId?, error?` (+ `submittedAt`/`updatedAt` on snapshots, `timestamp` on events).
+Event/snapshot fields: `jobId, name, status, progress (0–100), scheduledAt?, workerId?, error?`
+(+ `submittedAt`/`updatedAt` on snapshots, `timestamp` on events).
 
 ## Out of scope
 

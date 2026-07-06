@@ -1,24 +1,79 @@
-<div appCard>
-  <div appCardHeader><div appCardTitle>Submit a job</div></div>
-  <div appCardContent>
+<div
+  class="group/card flex flex-col gap-(--card-spacing) overflow-hidden rounded-xl bg-card py-(--card-spacing) text-sm text-card-foreground ring-1 ring-foreground/10 [--card-spacing:--spacing(4)]"
+>
+  <div class="grid auto-rows-min items-start gap-1 px-(--card-spacing)">
+    <div class="font-heading text-base leading-snug font-medium">Submit a job</div>
+  </div>
+  <div class="px-(--card-spacing)">
     <form [formGroup]="form" (ngSubmit)="submit()" class="flex flex-wrap items-end gap-4">
       <div class="grid gap-1.5">
-        <label appLabel for="name">Name</label>
-        <input appInput id="name" formControlName="name" maxlength="100" placeholder="my-job" />
+        <label
+          class="flex items-center gap-2 text-sm leading-none font-medium select-none"
+          for="name"
+          >Name</label
+        >
+        <input
+          class="h-8 w-full min-w-0 rounded-lg border border-input bg-transparent px-2.5 py-1 text-base transition-colors outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:cursor-not-allowed disabled:bg-input/50 disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 md:text-sm"
+          id="name"
+          formControlName="name"
+          maxlength="100"
+          placeholder="my-job"
+        />
       </div>
       <div class="grid gap-1.5">
-        <label appLabel for="durationMs">Duration (ms)</label>
-        <input appInput id="durationMs" type="number" formControlName="durationMs" min="1000" max="120000" />
+        <label
+          class="flex items-center gap-2 text-sm leading-none font-medium select-none"
+          for="durationMs"
+        >
+          Duration (ms)
+        </label>
+        <input
+          class="h-8 w-full min-w-0 rounded-lg border border-input bg-transparent px-2.5 py-1 text-base transition-colors outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:cursor-not-allowed disabled:bg-input/50 disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 md:text-sm"
+          id="durationMs"
+          type="number"
+          formControlName="durationMs"
+          min="1000"
+          max="120000"
+        />
       </div>
       <div class="grid gap-1.5">
-        <label appLabel for="failureRate">Failure rate</label>
-        <input appInput id="failureRate" type="number" formControlName="failureRate" min="0" max="1" step="0.05" />
+        <label
+          class="flex items-center gap-2 text-sm leading-none font-medium select-none"
+          for="failureRate"
+        >
+          Failure rate
+        </label>
+        <input
+          class="h-8 w-full min-w-0 rounded-lg border border-input bg-transparent px-2.5 py-1 text-base transition-colors outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:cursor-not-allowed disabled:bg-input/50 disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 md:text-sm"
+          id="failureRate"
+          type="number"
+          formControlName="failureRate"
+          min="0"
+          max="1"
+          step="0.05"
+        />
       </div>
       <div class="grid gap-1.5">
-        <label appLabel for="scheduledAt">Scheduled at</label>
-        <input appInput id="scheduledAt" type="datetime-local" formControlName="scheduledAt" />
+        <label
+          class="flex items-center gap-2 text-sm leading-none font-medium select-none"
+          for="scheduledAt"
+        >
+          Scheduled at
+        </label>
+        <input
+          class="h-8 w-full min-w-0 rounded-lg border border-input bg-transparent px-2.5 py-1 text-base transition-colors outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:cursor-not-allowed disabled:bg-input/50 disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 md:text-sm"
+          id="scheduledAt"
+          type="datetime-local"
+          formControlName="scheduledAt"
+        />
       </div>
-      <button appBtn type="submit" [disabled]="form.invalid">Submit</button>
+      <button
+        class="group/button inline-flex h-8 shrink-0 items-center justify-center gap-1.5 rounded-lg border border-transparent bg-primary bg-clip-padding px-2.5 text-sm font-medium whitespace-nowrap text-primary-foreground transition-all outline-none select-none hover:bg-primary/80 focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:opacity-50"
+        type="submit"
+        [disabled]="form.invalid"
+      >
+        Submit
+      </button>
       @if (notice()) {
         <span class="text-sm text-muted-foreground">{{ notice() }}</span>
       }

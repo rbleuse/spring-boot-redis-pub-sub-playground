@@ -1,24 +1,11 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { JobApiService } from '../core/job-api.service';
-import { ButtonDirective } from '../ui/button';
-import { CardContentDirective, CardDirective, CardHeaderDirective, CardTitleDirective } from '../ui/card';
-import { InputDirective } from '../ui/input';
-import { LabelDirective } from '../ui/label';
 
 @Component({
   selector: 'app-submit-form',
   standalone: true,
-  imports: [
-    ReactiveFormsModule,
-    ButtonDirective,
-    CardDirective,
-    CardHeaderDirective,
-    CardTitleDirective,
-    CardContentDirective,
-    InputDirective,
-    LabelDirective,
-  ],
+  imports: [ReactiveFormsModule],
   templateUrl: './submit-form.html',
 })
 export class SubmitForm {
@@ -39,7 +26,10 @@ export class SubmitForm {
     }
     const { scheduledAt, ...rest } = this.form.getRawValue();
     this.api
-      .submit({ ...rest, scheduledAt: scheduledAt ? new Date(scheduledAt).toISOString() : undefined })
+      .submit({
+        ...rest,
+        scheduledAt: scheduledAt ? new Date(scheduledAt).toISOString() : undefined,
+      })
       .subscribe({
         next: (r) => {
           this.notice.set(`Submitted ${r.jobId}`);

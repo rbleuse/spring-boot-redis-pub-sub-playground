@@ -23,7 +23,6 @@ class JobProcessorTest {
         JobProcessor(
             repository = store,
             reporter = reporter,
-            simulator = JobSimulator(steps = 2),
             instance = InstanceInfo("app-test"),
             random = random,
         )
@@ -75,9 +74,9 @@ class JobProcessorTest {
         val jobs = mutableListOf<Job>()
         verify(exactly = 2) { reporter.report(capture(jobs)) }
         jobs[0].status shouldBe JobStatus.RUNNING
-        jobs[0].progress shouldBe 50
+        jobs[0].progress shouldBe 10
         jobs[1].status shouldBe JobStatus.FAILED
-        jobs[1].progress shouldBe 50
+        jobs[1].progress shouldBe 10
         lockOwner.captured.startsWith("app-test:") shouldBe true
         verify { store.releaseProcessing(command.jobId, lockOwner.captured) }
     }

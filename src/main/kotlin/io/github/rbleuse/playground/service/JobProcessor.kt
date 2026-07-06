@@ -16,7 +16,6 @@ import kotlin.random.Random
 class JobProcessor(
     private val repository: JobRepository,
     private val reporter: ProgressReporter,
-    private val simulator: JobSimulator,
     private val instance: InstanceInfo,
     private val random: Random = Random.Default,
 ) {
@@ -46,14 +45,14 @@ class JobProcessor(
             }
             var current = existing
 
-            for (step in 1..simulator.totalSteps) {
-                Thread.sleep(simulator.stepDelayMs(command.durationMs))
-                if (simulator.shouldFail(command.failureRate, random.nextDouble())) {
+            for (step in 1..STEPS) {
+                Thread.sleep(command.durationMs / STEPS)
+                if (random.nextDouble() < command.failureRate) {
                     reporter.report(
                         current.copy(
                             status = JobStatus.FAILED,
                             workerId = instance.id,
-                            error = "Job failed at step $step of ${simulator.totalSteps}",
+                            error = "Job failed at step $step of $STEPS",
                             updatedAt = Instant.now(),
                         ),
                     )
@@ -63,7 +62,7 @@ class JobProcessor(
                 current =
                     current.copy(
                         status = JobStatus.RUNNING,
-                        progress = simulator.progressAt(step),
+                        progress = (step * 100) / STEPS,
                         workerId = instance.id,
                         updatedAt = Instant.now(),
                     )
@@ -85,6 +84,7 @@ class JobProcessor(
     }
 
     companion object {
+        private const val STEPS = 10
         private val PROCESSING_LOCK_GRACE: Duration = Duration.ofSeconds(30)
         private val logger = LoggerFactory.getLogger(JobProcessor::class.java)
     }

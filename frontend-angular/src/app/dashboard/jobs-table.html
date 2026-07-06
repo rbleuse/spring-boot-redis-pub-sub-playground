@@ -1,52 +1,97 @@
-<div appCard>
-  <div appCardHeader><div appCardTitle>Jobs</div></div>
-  <div appCardContent>
+<div
+  class="group/card flex flex-col gap-(--card-spacing) overflow-hidden rounded-xl bg-card py-(--card-spacing) text-sm text-card-foreground ring-1 ring-foreground/10 [--card-spacing:--spacing(4)]"
+>
+  <div class="grid auto-rows-min items-start gap-1 px-(--card-spacing)">
+    <div class="font-heading text-base leading-snug font-medium">Jobs</div>
+  </div>
+  <div class="px-(--card-spacing)">
     <div class="relative w-full overflow-x-auto">
-      <table appTable>
-        <thead appTableHeader>
-          <tr appTableRow>
-            <th appTableHead>Job</th>
-            <th appTableHead>Status</th>
-            <th appTableHead class="w-[220px]">Progress</th>
-            <th appTableHead>Scheduled at</th>
-            <th appTableHead>Worker</th>
-            <th appTableHead>Updated</th>
-            <th appTableHead></th>
+      <table class="w-full caption-bottom text-sm">
+        <thead class="[&_tr]:border-b">
+          <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+            <th
+              class="h-10 px-2 text-left align-middle font-medium whitespace-nowrap text-foreground"
+            >
+              Job
+            </th>
+            <th
+              class="h-10 px-2 text-left align-middle font-medium whitespace-nowrap text-foreground"
+            >
+              Status
+            </th>
+            <th
+              class="h-10 w-[220px] px-2 text-left align-middle font-medium whitespace-nowrap text-foreground"
+            >
+              Progress
+            </th>
+            <th
+              class="h-10 px-2 text-left align-middle font-medium whitespace-nowrap text-foreground"
+            >
+              Scheduled at
+            </th>
+            <th
+              class="h-10 px-2 text-left align-middle font-medium whitespace-nowrap text-foreground"
+            >
+              Worker
+            </th>
+            <th
+              class="h-10 px-2 text-left align-middle font-medium whitespace-nowrap text-foreground"
+            >
+              Updated
+            </th>
+            <th
+              class="h-10 px-2 text-left align-middle font-medium whitespace-nowrap text-foreground"
+            ></th>
           </tr>
         </thead>
-        <tbody appTableBody>
+        <tbody class="[&_tr:last-child]:border-0">
           @for (job of jobs(); track job.jobId) {
-            <tr appTableRow>
-              <td appTableCell>
+            <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+              <td class="p-2 align-middle whitespace-nowrap">
                 <div class="font-medium">{{ job.name }}</div>
                 <div class="text-xs text-muted-foreground">{{ job.jobId }}</div>
               </td>
-              <td appTableCell>
-                <span appBadge [variant]="badge(job.status).variant" [class]="badge(job.status).class">
-                  {{ job.status }}
-                </span>
+              <td class="p-2 align-middle whitespace-nowrap">
+                <span [class]="badgeClass(job.status)">{{ job.status }}</span>
                 @if (job.error) {
                   <div class="mt-1 text-xs text-destructive">{{ job.error }}</div>
                 }
               </td>
-              <td appTableCell>
+              <td class="p-2 align-middle whitespace-nowrap">
                 <div class="flex items-center gap-2">
-                  <app-progress [value]="job.progress" class="w-36" />
+                  <div class="h-1 w-36 overflow-hidden rounded-full bg-muted">
+                    <div
+                      class="h-full bg-primary transition-all"
+                      [style.width.%]="job.progress"
+                    ></div>
+                  </div>
                   <span class="text-xs tabular-nums">{{ job.progress }}%</span>
                 </div>
               </td>
-              <td appTableCell>{{ job.scheduledAt ? (job.scheduledAt | date: 'short') : '—' }}</td>
-              <td appTableCell>{{ job.workerId ?? '—' }}</td>
-              <td appTableCell>{{ job.updatedAt | date: 'mediumTime' }}</td>
-              <td appTableCell>
+              <td class="p-2 align-middle whitespace-nowrap">
+                {{ job.scheduledAt ? (job.scheduledAt | date: 'short') : '—' }}
+              </td>
+              <td class="p-2 align-middle whitespace-nowrap">{{ job.workerId ?? '—' }}</td>
+              <td class="p-2 align-middle whitespace-nowrap">
+                {{ job.updatedAt | date: 'mediumTime' }}
+              </td>
+              <td class="p-2 align-middle whitespace-nowrap">
                 @if (!isTerminal(job.status)) {
-                  <button appBtn variant="outline" size="sm" (click)="cancel(job)">Cancel</button>
+                  <button
+                    class="group/button inline-flex h-7 shrink-0 items-center justify-center gap-1 rounded-lg border border-border bg-background bg-clip-padding px-2.5 text-[0.8rem] font-medium whitespace-nowrap transition-all outline-none select-none hover:bg-muted hover:text-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:opacity-50"
+                    (click)="cancel(job)"
+                  >
+                    Cancel
+                  </button>
                 }
               </td>
             </tr>
           } @empty {
-            <tr appTableRow>
-              <td appTableCell colspan="7" class="text-center text-muted-foreground">
+            <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+              <td
+                class="p-2 text-center align-middle whitespace-nowrap text-muted-foreground"
+                colspan="7"
+              >
                 No jobs yet — submit one above.
               </td>
             </tr>
