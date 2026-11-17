@@ -1,6 +1,6 @@
 plugins {
 	kotlin("jvm") version "2.4.10"
-	kotlin("plugin.spring") version "2.4.10"
+	kotlin("plugin.spring") version "2.4.21"
 	id("org.springframework.boot") version "4.1.1"
 	id("io.spring.dependency-management") version "1.1.7"
 	id("org.jmailen.kotlinter") version "5.7.0"
@@ -21,6 +21,9 @@ repositories {
 }
 
 dependencies {
+	// shortcut: keep ktlint 1.8.0's compiler out of Boot's alignment; revisit on kotlinter upgrades.
+	add("ktlint", "org.jetbrains.kotlin:kotlin-compiler-embeddable:2.2.21")
+
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.springframework.boot:spring-boot-starter-websocket")
 	implementation("org.springframework.boot:spring-boot-starter-data-redis")
