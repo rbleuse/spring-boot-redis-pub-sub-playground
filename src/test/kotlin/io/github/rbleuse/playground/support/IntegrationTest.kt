@@ -17,14 +17,14 @@ abstract class IntegrationTest {
         @JvmStatic
         @ServiceConnection
         val pulsar: PulsarContainer =
-            PulsarContainer(DockerImageName.parse("apachepulsar/pulsar:4.2.2"))
+            PulsarContainer(DockerImageName.parse("apachepulsar/pulsar:5.0.1"))
                 .withStartupTimeout(Duration.ofMinutes(2))
                 .apply { start() }
 
         @JvmStatic
         @ServiceConnection(name = "redis")
         val valkey: GenericContainer<*> =
-            GenericContainer(DockerImageName.parse("valkey/valkey:9.1.0"))
+            GenericContainer(DockerImageName.parse("valkey/valkey:9.1.3"))
                 .withExposedPorts(6379)
                 .apply { start() }
     }

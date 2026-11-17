@@ -1,12 +1,12 @@
 services:
   valkey:
-    image: 'valkey/valkey:9.1.0'
+    image: 'valkey/valkey:9.1.3'
     ports:
       - '6379'
     labels:
       org.springframework.boot.service-connection: redis
   pulsar:
-    image: 'apachepulsar/pulsar:4.2.2'
+    image: 'apachepulsar/pulsar:5.0.1'
     command: [ 'bin/pulsar', 'standalone' ]
     healthcheck:
       test: [ 'CMD', 'bin/pulsar-admin', 'brokers', 'healthcheck' ]

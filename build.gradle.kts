@@ -1,13 +1,16 @@
 plugins {
 	kotlin("jvm") version "2.4.21"
 	kotlin("plugin.spring") version "2.4.21"
-	id("org.springframework.boot") version "4.1.1"
+	id("org.springframework.boot") version "4.1.2"
 	id("io.spring.dependency-management") version "1.1.7"
 	id("org.jmailen.kotlinter") version "5.7.0"
 }
 
 group = "io.github.rbleuse"
 version = "0.0.1-SNAPSHOT"
+
+extra["pulsar.version"] = "5.0.1"
+extra["netty.version"] = "4.2.20.Final"
 
 java {
 	toolchain {
@@ -27,18 +30,13 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.springframework.boot:spring-boot-starter-websocket")
 	implementation("org.springframework.boot:spring-boot-starter-data-redis")
-	implementation("org.springframework.boot:spring-boot-starter-pulsar")
+	implementation("org.apache.pulsar:pulsar-spring-boot-starter:3.0.0-M1")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
 	implementation("org.springframework.boot:spring-boot-jackson2")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	runtimeOnly("com.julien-dubois.bootui:bootui-spring-boot-starter:1.18.0")
-
-	constraints {
-		// pulsar-client-all drags in an older incubator; keep it aligned with the Boot-managed OTel version
-		implementation("io.opentelemetry:opentelemetry-api-incubator:${dependencyManagement.importedProperties["opentelemetry.version"]}-alpha")
-	}
 
 	developmentOnly("org.springframework.boot:spring-boot-docker-compose")
 

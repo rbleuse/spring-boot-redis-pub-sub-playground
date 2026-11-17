@@ -1,7 +1,7 @@
 package io.github.rbleuse.playground.model
 
 import org.apache.pulsar.common.schema.SchemaType
-import org.springframework.pulsar.annotation.PulsarMessage
+import org.apache.pulsar.spring.annotation.PulsarMessage
 
 @PulsarMessage(schemaType = SchemaType.JSON)
 data class JobCommand(

@@ -14,11 +14,11 @@ import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import org.apache.pulsar.client.api.TypedMessageBuilder
+import org.apache.pulsar.spring.core.PulsarOperations
+import org.apache.pulsar.spring.core.PulsarTemplate
+import org.apache.pulsar.spring.core.TypedMessageBuilderCustomizer
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import org.springframework.pulsar.core.PulsarOperations
-import org.springframework.pulsar.core.PulsarTemplate
-import org.springframework.pulsar.core.TypedMessageBuilderCustomizer
 import java.time.Instant
 import java.util.concurrent.TimeUnit
 

@@ -9,8 +9,8 @@ import io.github.rbleuse.playground.model.Job
 import io.github.rbleuse.playground.model.JobCommand
 import io.github.rbleuse.playground.model.JobStatus
 import io.github.rbleuse.playground.repository.JobRepository
+import org.apache.pulsar.spring.core.PulsarTemplate
 import org.slf4j.LoggerFactory
-import org.springframework.pulsar.core.PulsarTemplate
 import org.springframework.stereotype.Service
 import java.time.Duration
 import java.time.Instant

@@ -5,9 +5,10 @@ from whichever Spring Boot replica processes them to whichever replica holds you
 WebSocket — bridged by Valkey Pub/Sub.
 
 ## Stack
-- Spring Boot 4.1 / Kotlin 2.4 / Java 25
-- Apache Pulsar 4.2.2 — durable job queue (Shared subscription = one worker per job)
-- Valkey 9.1.0 — job-state hashes + progress Pub/Sub fan-out
+- Spring Boot 4.1.2 / Kotlin 2.4 / Java 25
+- Apache Pulsar support for Spring 3.0.0-M1 / Pulsar client 5.0.1
+- Apache Pulsar 5.0.1 (LTS) — durable job queue (Shared subscription = one worker per job)
+- Valkey 9.1.3 (long-term support) — job-state hashes + progress Pub/Sub fan-out
 - STOMP over WebSocket — live browser push
 
 ## Run locally (single instance)

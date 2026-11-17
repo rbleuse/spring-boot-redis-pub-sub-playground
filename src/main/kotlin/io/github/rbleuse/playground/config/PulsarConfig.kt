@@ -2,17 +2,14 @@ package io.github.rbleuse.playground.config
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.apache.pulsar.client.api.DeadLetterPolicy
+import org.apache.pulsar.spring.core.DefaultSchemaResolver
+import org.apache.pulsar.spring.core.SchemaResolver.SchemaResolverCustomizer
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.pulsar.core.DefaultSchemaResolver
-import org.springframework.pulsar.core.SchemaResolver.SchemaResolverCustomizer
 
 @Configuration
 class PulsarConfig {
-    /**
-     * Pulsar's default JSON schema uses a shaded ObjectMapper without the Kotlin module,
-     * which cannot deserialize Kotlin data classes. Point it at Spring's mapper instead.
-     */
+    // Use Spring's mapper so Pulsar JSON schemas can deserialize Kotlin data classes.
     @Bean
     fun schemaResolverCustomizer(objectMapper: ObjectMapper): SchemaResolverCustomizer<DefaultSchemaResolver> =
         SchemaResolverCustomizer { resolver -> resolver.setObjectMapper(objectMapper) }
