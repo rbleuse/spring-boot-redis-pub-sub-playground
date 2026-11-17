@@ -36,7 +36,7 @@ dependencies {
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
-	runtimeOnly("com.julien-dubois.bootui:bootui-spring-boot-starter:1.18.0")
+	runtimeOnly("com.julien-dubois.bootui:bootui-spring-boot-starter:2.4.0")
 
 	developmentOnly("org.springframework.boot:spring-boot-docker-compose")
 
