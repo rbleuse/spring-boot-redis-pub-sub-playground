@@ -25,7 +25,7 @@ repositories {
 
 dependencies {
 	// shortcut: keep ktlint 1.8.0's compiler out of Boot's alignment; revisit on kotlinter upgrades.
-	add("ktlint", "org.jetbrains.kotlin:kotlin-compiler-embeddable:2.2.21")
+	add("ktlint", "org.jetbrains.kotlin:kotlin-compiler-embeddable:2.4.21")
 
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.springframework.boot:spring-boot-starter-websocket")
